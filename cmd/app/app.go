@@ -26,8 +26,8 @@ var bootstrapCmd = &cobra.Command{
 	Short: "Bootstraps the application and it's related services.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		log.Println("Starting the Application..." + "timestamp" + time.Now().String())
+		log.Println("Starting the Application...    " + "timestamp" + time.Now().String())
 		bootstrap.Init()
-		log.Println("Application exited successfully." + "timestamp" + time.Now().String())
+		log.Println("Application exited successfully.    " + "timestamp" + time.Now().String())
 	},
 }

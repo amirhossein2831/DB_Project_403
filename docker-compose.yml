@@ -12,7 +12,7 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
       TZ: ${APP_TZ}
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - db-project-pg-data:/var/lib/postgresql/data
     networks:
       - db-project
     healthcheck:
@@ -23,7 +23,7 @@ services:
 
 # Volumes
 volumes:
-  pg-data:
+  db-project-pg-data:
     external: true
 
 # Networks

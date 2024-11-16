@@ -1,0 +1,32 @@
+services:
+  # Postgres
+  postgres:
+    image: docker-repo.omaxplatform.com/postgres:alpine
+    container_name: postgres.${APP_NAME}
+    restart: unless-stopped
+    ports:
+      - ${DB_PORT:-5432}:5432
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+      TZ: ${APP_TZ}
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    networks:
+      - db-project
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+# Volumes
+volumes:
+  pg-data:
+    external: true
+
+# Networks
+networks:
+  db-project:
+    driver: bridge

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"DB_Project/cmd/app"
+	"DB_Project/cmd/database"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +15,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(
 		app.App,
+		database.Database,
 	)
 }
 

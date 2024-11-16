@@ -45,5 +45,6 @@ func Init() {
 		log.Fatalf("HTTP Service: Failed to shutdown server. %v.    timestamp: %s \n", err, time.Now().String())
 	}
 	log.Printf("HTTP Service: server shutdwon sucessfully. %v.    timestamp: %s \n", err, time.Now().String())
+
 	time.Sleep(1 * time.Second)
 }

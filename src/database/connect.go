@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"os"
 	"sync"
@@ -46,4 +47,15 @@ func Close() error {
 	}
 
 	return db.Close(context.Background())
+}
+
+func RunFileQuery(file string) (pgconn.CommandTag, error) {
+	// Read the SQL file
+	sqlQuery, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+
+	// Execute the SQL query
+	return db.Exec(context.Background(), string(sqlQuery))
 }

@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS account CASCADE;
+
+DROP TYPE IF EXISTS account_type;
+
+DROP TYPE IF EXISTS account_status;

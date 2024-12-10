@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS installment;
+DROP TABLE IF EXISTS installment CASCADE;

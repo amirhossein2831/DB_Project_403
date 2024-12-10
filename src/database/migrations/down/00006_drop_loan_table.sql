@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS loan;
+
+DROP TYPE IF EXISTS loan_type;
+
+DROP TYPE IF EXISTS loan_status;

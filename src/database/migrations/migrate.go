@@ -13,8 +13,8 @@ func MigrateUp() error {
 	}
 
 	// Execute each migration file
-	for _, file := range files {
-		_, err = database.RunFileQuery(file)
+	for i := 0; i < len(files); i++ {
+		_, err = database.RunFileQuery(files[i])
 		if err != nil {
 			return err
 		}
@@ -30,8 +30,8 @@ func MigrateDown() error {
 	}
 
 	// Execute each migration file
-	for _, file := range files {
-		_, err = database.RunFileQuery(file)
+	for i := len(files) - 1; i >= 0; i-- {
+		_, err = database.RunFileQuery(files[i])
 		if err != nil {
 			return err
 		}

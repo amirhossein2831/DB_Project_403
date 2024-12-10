@@ -1,7 +1,9 @@
-CREATE TABLE IF NOT EXISTS users
-(
-    id         SERIAL PRIMARY KEY,
-    first_name VARCHAR(255),
-    last_name  VARCHAR(255),
-    email      VARCHAR(255) UNIQUE NOT NULL
-)
+CREATE TABLE  IF NOT EXISTS profile (
+     id SERIAL PRIMARY KEY,
+     first_name VARCHAR(100) NOT NULL,
+     last_name VARCHAR(100) NOT NULL,
+     birth_date DATE,
+     phone VARCHAR(15),
+     email VARCHAR(255) UNIQUE,
+     address TEXT
+);

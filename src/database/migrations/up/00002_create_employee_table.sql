@@ -1,7 +1,6 @@
-CREATE TABLE IF NOT EXISTS admins
-(
-    id         SERIAL PRIMARY KEY,
-    first_name VARCHAR(255),
-    last_name  VARCHAR(255),
-    email      VARCHAR(255) UNIQUE NOT NULL
-)
+CREATE TABLE IF NOT EXISTS employee(
+      id SERIAL PRIMARY KEY,
+      position VARCHAR(100) NOT NULL,
+      profile_id INT NOT NULL,
+      CONSTRAINT fk_profile FOREIGN KEY (profile_id) REFERENCES profile (id) ON DELETE CASCADE
+);

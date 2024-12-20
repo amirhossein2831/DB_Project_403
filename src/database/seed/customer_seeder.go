@@ -11,11 +11,11 @@ func CustomerSeeder() {
 
 	query := `
 	INSERT INTO customer (id, profile_id, type)	VALUES
-		(1, 1, 'regular'),
-		(2, 2, 'premium'),
-		(3, 3, 'regular'),
-		(4, 4, 'corporate'),
-		(5, 5, 'premium');
+		(1, 1, 'individual'),
+		(2, 2, 'legal_entity'),
+		(3, 3, 'individual'),
+		(4, 4, 'legal_entity'),
+		(5, 5, 'individual');
 	`
 
 	// Execute the query

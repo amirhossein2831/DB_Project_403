@@ -20,6 +20,12 @@ var Seed = &cobra.Command{
 		// add seeders
 		log.Println("Starting seeding table...    " + "timestamp" + time.Now().String())
 		seed.ProfileSeeder()
+		seed.CustomerSeeder()
+		seed.EmployeeSeeder()
+		seed.AccountSeeder()
+		seed.TransactionSeeder()
+		seed.LoanSeeder()
+		seed.InstallmentSeeder()
 
 		log.Println("seeding table successfully.    " + "timestamp" + time.Now().String())
 

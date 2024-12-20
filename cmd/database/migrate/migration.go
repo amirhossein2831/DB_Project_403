@@ -9,19 +9,17 @@ import (
 	"time"
 )
 
-// Migrate Commands for interacting with apps
+// Migrate Commands for interacting with database
 var Migrate = &cobra.Command{
 	Use:   "migrate",
 	Short: "Commands for migrate tables",
 }
 
 func init() {
-
 	Migrate.AddCommand(
 		migrateUp,
 		migrateDown,
 	)
-
 }
 
 var migrateUp = &cobra.Command{

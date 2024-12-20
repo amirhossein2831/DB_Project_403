@@ -2,6 +2,7 @@ package database
 
 import (
 	"DB_Project/cmd/database/migrate"
+	"DB_Project/cmd/database/seed"
 	"github.com/spf13/cobra"
 )
 
@@ -12,9 +13,8 @@ var Database = &cobra.Command{
 }
 
 func init() {
-
 	Database.AddCommand(
 		migrate.Migrate,
+		seed.Seed,
 	)
-
 }

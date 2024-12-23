@@ -49,6 +49,7 @@ func (service *CustomerService) CreateCustomer(req *customer.CreateCustomerReque
 	return service.Repository.Create(customer, profile)
 }
 
+// TODO: use one query to update several field
 func (service *CustomerService) UpdateCustomer(req *customer.UpdateCustomerRequest, id string) error {
 	if req.FirstName != nil && *req.FirstName != "" {
 		err := service.ProfileRepository.UpdateField("first_name", id, *req.FirstName)

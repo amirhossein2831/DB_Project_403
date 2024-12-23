@@ -48,6 +48,7 @@ func (controller *CustomerController) Get(c fiber.Ctx) error {
 }
 
 func (controller *CustomerController) Create(c fiber.Ctx) error {
+	// TODO: add validation
 	req := &customer.CreateCustomerRequest{
 		FirstName:    "amir",
 		LastName:     "sda",

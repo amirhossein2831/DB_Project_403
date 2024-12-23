@@ -10,5 +10,6 @@ func CustomerRoute(router fiber.Router) {
 
 	router.Get("/customers", customerController.List)
 	router.Get("/customers/:id", customerController.Get)
+	router.Get("/customerss", customerController.Create)
 	router.Delete("/customers/:id", customerController.Delete)
 }

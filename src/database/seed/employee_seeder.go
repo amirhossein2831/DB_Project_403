@@ -10,12 +10,12 @@ func EmployeeSeeder() {
 	log.Println("Employee Customer table...")
 
 	query := `
-	INSERT INTO employee (id, profile_id, position)VALUES
-		(1, 1, 'Manager'),
-		(2, 2, 'Cashier'),
-		(3, 3, 'Loan Officer'),
-		(4, 4, 'IT Specialist'),
-		(5, 5, 'Accountant');
+	INSERT INTO employee (profile_id, position)VALUES
+		(1, 'Manager'),
+		(2, 'Cashier'),
+		(3, 'Loan Officer'),
+		(4, 'IT Specialist'),
+		(5, 'Accountant');
 	`
 
 	// Execute the query

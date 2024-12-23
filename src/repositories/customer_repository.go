@@ -5,6 +5,7 @@ import (
 	"DB_Project/src/models"
 	"DB_Project/src/utils"
 	"context"
+	"fmt"
 )
 
 type CustomerRepository struct {
@@ -72,6 +73,11 @@ func (repository *CustomerRepository) Create(customer *models.Customer, profile 
 
 	// Commit the transaction if everything is successful
 	return tx.Commit(ctx)
+}
+
+func (repository *CustomerRepository) UpdateField(name, id string, value interface{}) error {
+	_, err := database.GetInstance().Exec(context.Background(), fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", name), value, id)
+	return err
 }
 
 func (repository *CustomerRepository) Delete(id string) error {

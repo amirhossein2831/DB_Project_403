@@ -4,6 +4,7 @@ import (
 	"DB_Project/src/api/http/request/customer"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
+	"time"
 )
 
 type CustomerService struct {
@@ -25,6 +26,9 @@ func (service *CustomerService) GetCustomer(id string) (*models.Customer, error)
 }
 
 func (service *CustomerService) CreateCustomer(req *customer.CreateCustomerRequest) error {
+	// cast birth_date to date
+	birthDate, _ := time.Parse("2006-01-02", req.BirthDate)
+
 	// customer
 	customer := &models.Customer{
 		Type: req.CustomerType,
@@ -34,7 +38,7 @@ func (service *CustomerService) CreateCustomer(req *customer.CreateCustomerReque
 	profile := &models.Profile{
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
-		BirthDate: req.BirthDate,
+		BirthDate: birthDate,
 		Phone:     req.Phone,
 		Email:     req.Email,
 		Address:   req.Address,

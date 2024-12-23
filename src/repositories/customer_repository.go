@@ -43,22 +43,35 @@ func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 }
 
 func (repository *CustomerRepository) Create(customer *models.Customer, profile *models.Profile) error {
-	_, err := database.GetInstance().Exec(context.Background(),
-		"INSERT INTO profile (first_name, last_name, birth_date,phone,email,address) VALUES ($1, $2,$3, $4,$5, $6)",
+	// context
+	ctx := context.Background()
+
+	// Start a transaction
+	tx, err := database.GetInstance().Begin(ctx)
+	if err != nil {
+		return err
+	}
+	// Ensure that the transaction is rolled back if any error occurs
+	defer tx.Rollback(ctx)
+
+	// Insert profile and retrieve the generated profile ID
+	err = tx.QueryRow(ctx, "INSERT INTO profile (first_name, last_name, birth_date, phone, email, address) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 		profile.FirstName, profile.LastName, profile.BirthDate, profile.Phone, profile.Email, profile.Address,
+	).Scan(&profile.ID)
+	if err != nil {
+		return err
+	}
+
+	// Insert customer using the generated profile ID
+	_, err = tx.Exec(ctx, "INSERT INTO customer (profile_id, type) VALUES ($1, $2)",
+		profile.ID, customer.Type,
 	)
 	if err != nil {
 		return err
 	}
 
-	_, err = database.GetInstance().Exec(context.Background(),
-		"INSERT INTO customer (profile_id, type, email) VALUES ($1, $2)",
-		customer.ProfileID, customer.Type)
-	if err != nil {
-		return err
-	}
-
-	return err
+	// Commit the transaction if everything is successful
+	return tx.Commit(ctx)
 }
 
 func (repository *CustomerRepository) Delete(id string) error {

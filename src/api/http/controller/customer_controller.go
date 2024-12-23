@@ -61,8 +61,20 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
 
-func (controller *CustomerController) Update(c *fiber.Ctx) error {
-	return nil
+func (controller *CustomerController) Update(c fiber.Ctx) error {
+	id := c.Params("id")
+
+	req := new(customer.UpdateCustomerRequest)
+	if err := c.Bind().Body(req); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
+	}
+
+	err := controller.Service.UpdateCustomer(req, id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
 
 func (controller *CustomerController) Delete(c fiber.Ctx) error {

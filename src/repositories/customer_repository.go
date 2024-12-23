@@ -14,7 +14,7 @@ func NewCustomerRepository() *CustomerRepository {
 	return &CustomerRepository{}
 }
 
-func (repository *CustomerRepository) GetCustomers() ([]*models.Customer, error) {
+func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	var customers []*models.Customer
 	rows, err := database.GetInstance().Query(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id")
 	if err != nil {
@@ -31,7 +31,7 @@ func (repository *CustomerRepository) GetCustomers() ([]*models.Customer, error)
 	return customers, rows.Err()
 }
 
-func (repository *CustomerRepository) GetCustomer(id string) (*models.Customer, error) {
+func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
 	row := database.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)
 	err := utils.FillStructFromRowWithJoin(row, &customer)
@@ -40,4 +40,9 @@ func (repository *CustomerRepository) GetCustomer(id string) (*models.Customer, 
 	}
 
 	return &customer, nil
+}
+
+func (repository *CustomerRepository) Delete(id string) error {
+	_, err := database.GetInstance().Exec(context.Background(), "DELETE FROM customer WHERE id=$1", id)
+	return err
 }

@@ -48,6 +48,14 @@ func (controller *CustomerController) Update(c *fiber.Ctx) error {
 	return nil
 }
 
-func (controller *CustomerController) Delete(c *fiber.Ctx) error {
-	return nil
+func (controller *CustomerController) Delete(c fiber.Ctx) error {
+	id := c.Params("id")
+	err := controller.Service.DeleteCustomer(id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return c.Status(fiber.StatusNotFound).SendString(CustomerNotFound.Error())
+		}
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

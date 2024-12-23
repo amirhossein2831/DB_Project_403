@@ -16,9 +16,18 @@ func NewCustomerService() *CustomerService {
 }
 
 func (service *CustomerService) GetCustomers() ([]*models.Customer, error) {
-	return service.Repository.GetCustomers()
+	return service.Repository.List()
 }
 
 func (service *CustomerService) GetCustomer(id string) (*models.Customer, error) {
-	return service.Repository.GetCustomer(id)
+	return service.Repository.Get(id)
+}
+
+func (service *CustomerService) DeleteCustomer(id string) error {
+	_, err := service.Repository.Get(id)
+	if err != nil {
+		return err
+	}
+
+	return service.Repository.Delete(id)
 }

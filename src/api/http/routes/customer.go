@@ -9,4 +9,5 @@ func CustomerRoute(router fiber.Router) {
 	customerController := controller.NewCustomerController()
 
 	router.Get("/customers", customerController.List)
+	router.Get("/customers/:id", customerController.Get)
 }

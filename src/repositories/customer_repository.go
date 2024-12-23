@@ -42,6 +42,25 @@ func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	return &customer, nil
 }
 
+func (repository *CustomerRepository) Create(customer *models.Customer, profile *models.Profile) error {
+	_, err := database.GetInstance().Exec(context.Background(),
+		"INSERT INTO profile (first_name, last_name, birth_date,phone,email,address) VALUES ($1, $2,$3, $4,$5, $6)",
+		profile.FirstName, profile.LastName, profile.BirthDate, profile.Phone, profile.Email, profile.Address,
+	)
+	if err != nil {
+		return err
+	}
+
+	_, err = database.GetInstance().Exec(context.Background(),
+		"INSERT INTO customer (profile_id, type, email) VALUES ($1, $2)",
+		customer.ProfileID, customer.Type)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
 func (repository *CustomerRepository) Delete(id string) error {
 	_, err := database.GetInstance().Exec(context.Background(), "DELETE FROM customer WHERE id=$1", id)
 	return err

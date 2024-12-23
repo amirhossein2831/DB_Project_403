@@ -8,7 +8,8 @@ const (
 )
 
 type Customer struct {
-	ID        int    `json:"id"`
-	Type      string `json:"type"`
-	ProfileID int    `json:"profile_id"`
+	ID        int      `json:"id" sql:"id"`
+	Type      string   `json:"type" sql:"type"`
+	ProfileID int      `json:"profile_id" sql:"profile_id"`
+	Profile   *Profile `json:"profile" sql:""`
 }

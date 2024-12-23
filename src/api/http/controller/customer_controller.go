@@ -2,12 +2,11 @@ package controller
 
 import (
 	"DB_Project/src/api/http/request/customer"
-	"DB_Project/src/models"
+	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"errors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4"
-	"time"
 )
 
 var CustomerNotFound = errors.New("customer not found")
@@ -36,7 +35,7 @@ func (controller *CustomerController) List(c fiber.Ctx) error {
 func (controller *CustomerController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 
-	customer, err := controller.Service.GetCustomer(id)
+	res, err := controller.Service.GetCustomer(id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return c.Status(fiber.StatusNotFound).SendString(CustomerNotFound.Error())
@@ -44,19 +43,14 @@ func (controller *CustomerController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 
-	return c.Status(fiber.StatusOK).JSON(customer)
+	return c.Status(fiber.StatusOK).JSON(res)
 }
 
 func (controller *CustomerController) Create(c fiber.Ctx) error {
-	// TODO: add validation
-	req := &customer.CreateCustomerRequest{
-		FirstName:    "amir",
-		LastName:     "sda",
-		BirthDate:    time.Now(),
-		Phone:        "902938485",
-		Email:        "amirmemool1ssds2@gmail.cm",
-		Address:      "sdfdsf",
-		CustomerType: models.IndividualCustomerType,
+	req := new(customer.CreateCustomerRequest)
+
+	if err := c.Bind().Body(req); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
 	err := controller.Service.CreateCustomer(req)

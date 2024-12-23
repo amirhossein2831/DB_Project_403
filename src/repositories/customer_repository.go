@@ -14,10 +14,9 @@ func NewCustomerRepository() *CustomerRepository {
 	return &CustomerRepository{}
 }
 
-func (repository *CustomerRepository) GetCustomer() ([]*models.Customer, error) {
+func (repository *CustomerRepository) GetCustomers() ([]*models.Customer, error) {
 	var customers []*models.Customer
-	db := database.GetInstance()
-	rows, err := db.Query(context.Background(), "SELECT * FROM customer")
+	rows, err := database.GetInstance().Query(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id")
 	if err != nil {
 		return nil, err
 	}
@@ -25,9 +24,20 @@ func (repository *CustomerRepository) GetCustomer() ([]*models.Customer, error) 
 
 	for rows.Next() {
 		var customer models.Customer
-		err = utils.FillStructFromRow(rows, &customer)
+		err = utils.FillStructFromRowsWithJoin(rows, &customer)
 		customers = append(customers, &customer)
 	}
 
 	return customers, rows.Err()
+}
+
+func (repository *CustomerRepository) GetCustomer(id string) (*models.Customer, error) {
+	var customer models.Customer
+	row := database.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)
+	err := utils.FillStructFromRowWithJoin(row, &customer)
+	if err != nil {
+		return nil, err
+	}
+
+	return &customer, nil
 }

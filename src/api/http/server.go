@@ -37,6 +37,7 @@ func initServer() error {
 	{
 		v1 := api.Group("/v1")
 		{
+			routes.CustomerRoute(v1)
 			routes.UserRoute(v1)
 		}
 	}

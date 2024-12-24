@@ -37,7 +37,7 @@ func (service *AccountService) CreateAccount(req *account.CreateAccountRequest) 
 	return service.Repository.Create(account)
 }
 
-func (service *AccountService) UpdateAccountField(req account.UpdateAccountRequest, id string) error {
+func (service *AccountService) UpdateAccount(req *account.UpdateAccountRequest, id string) error {
 	if req.AccountNumber != nil && *req.AccountNumber != "" {
 		err := service.Repository.UpdateField("account_number", id, *req.AccountNumber)
 		if err != nil {

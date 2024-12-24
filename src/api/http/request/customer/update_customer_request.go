@@ -9,5 +9,5 @@ type UpdateCustomerRequest struct {
 	Phone        *string              `json:"phone" validate:"omitempty"`
 	Email        *string              `json:"email" validate:"omitempty,email"`
 	Address      *string              `json:"address" validate:"omitempty"`
-	CustomerType *models.CustomerType `json:"customer_type" validate:"omitempty,oneof=individual legal_entity"`
+	CustomerType *models.CustomerType `json:"customer_type" validate:"omitempty,oneof='' 'individual' 'legal_entity'"`
 }

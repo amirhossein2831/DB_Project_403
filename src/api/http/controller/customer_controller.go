@@ -11,7 +11,7 @@ import (
 )
 
 var CustomerNotFound = errors.New("customer not found")
-var FieldShouldBeUnique = errors.New("field should be unique: ")
+var CustomerFieldShouldBeUnique = errors.New("customer field should be unique: ")
 
 type CustomerController struct {
 	Service *services.CustomerService
@@ -58,7 +58,7 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 	err := controller.Service.CreateCustomer(req)
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
-			return c.Status(fiber.StatusConflict).SendString(FieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+			return c.Status(fiber.StatusConflict).SendString(CustomerFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

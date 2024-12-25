@@ -4,12 +4,14 @@ import (
 	"DB_Project/src/api/http/request/employee"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
+	"DB_Project/src/utils"
 	"errors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4"
 )
 
 var EmployeeNotFound = errors.New("employee not found")
+var EmployeeFieldShouldBeUnique = errors.New("employee field should be unique: ")
 
 type EmployeeController struct {
 	Service *services.EmployeeService
@@ -55,9 +57,11 @@ func (controller *EmployeeController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateEmployee(req)
 	if err != nil {
+		if utils.IsErrorCode(err, "23505") {
+			return c.Status(fiber.StatusConflict).SendString(EmployeeFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
-
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
 

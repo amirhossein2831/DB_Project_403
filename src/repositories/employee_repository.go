@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"DB_Project/src/models"
 	"DB_Project/src/utils"
 	"context"
@@ -17,7 +17,7 @@ func NewEmployeeRepository() *EmployeeRepository {
 
 func (repository *EmployeeRepository) List() ([]*models.Employee, error) {
 	var employees []*models.Employee
-	rows, err := database.GetInstance().Query(context.Background(), "SELECT e.*, p.* FROM employee e LEFT JOIN profile p ON e.profile_id = p.id")
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT e.*, p.* FROM employee e LEFT JOIN profile p ON e.profile_id = p.id")
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (repository *EmployeeRepository) List() ([]*models.Employee, error) {
 
 func (repository *EmployeeRepository) Get(id string) (*models.Employee, error) {
 	var employee models.Employee
-	row := database.GetInstance().QueryRow(context.Background(), "SELECT e.*, p.* FROM employee e LEFT JOIN profile p ON e.profile_id = p.id WHERE e.id=$1", id)
+	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT e.*, p.* FROM employee e LEFT JOIN profile p ON e.profile_id = p.id WHERE e.id=$1", id)
 	err := utils.FillStructFromRowWithJoin(row, &employee)
 	if err != nil {
 		return nil, err
@@ -48,7 +48,7 @@ func (repository *EmployeeRepository) Create(employee *models.Employee, profile 
 	ctx := context.Background()
 
 	// Start a transaction
-	tx, err := database.GetInstance().Begin(ctx)
+	tx, err := pgx.GetInstance().Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -76,11 +76,11 @@ func (repository *EmployeeRepository) Create(employee *models.Employee, profile 
 }
 
 func (repository *EmployeeRepository) UpdateField(name, id string, value interface{}) error {
-	_, err := database.GetInstance().Exec(context.Background(), fmt.Sprintf("UPDATE employee SET %s = $1 WHERE id = $2", name), value, id)
+	_, err := pgx.GetInstance().Exec(context.Background(), fmt.Sprintf("UPDATE employee SET %s = $1 WHERE id = $2", name), value, id)
 	return err
 }
 
 func (repository *EmployeeRepository) Delete(id string) error {
-	_, err := database.GetInstance().Exec(context.Background(), "DELETE FROM employee WHERE id=$1", id)
+	_, err := pgx.GetInstance().Exec(context.Background(), "DELETE FROM employee WHERE id=$1", id)
 	return err
 }

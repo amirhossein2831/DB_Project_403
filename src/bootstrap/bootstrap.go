@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"DB_Project/src/api/http"
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"context"
 	"github.com/joho/godotenv"
 	"log"
@@ -27,7 +27,7 @@ func Init() {
 	log.Printf("ENV Service: Env variable initial successfully.    timestamp: %s \n", time.Now().String())
 
 	// Initialize Database
-	err = database.Init()
+	err = pgx.Init()
 	if err != nil {
 		log.Fatalf("Database Service: Failed to Initialize: %v.    timestamp: %s", err, time.Now().String())
 	}
@@ -48,7 +48,7 @@ func Init() {
 	<-sc
 
 	log.Printf("Application shutting down....    timestamp: %s \n", time.Now().String())
-	err = database.Close()
+	err = pgx.Close()
 	if err != nil {
 		log.Fatalf("Databasde Service: Failed to close database. %v.    timestamp: %s \n", err, time.Now().String())
 	}

@@ -1,7 +1,7 @@
 package migrations
 
 import (
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"DB_Project/src/utils"
 )
 
@@ -14,7 +14,7 @@ func MigrateUp() error {
 
 	// Execute each migration file
 	for i := 0; i < len(files); i++ {
-		_, err = database.RunFileQuery(files[i])
+		_, err = pgx.RunFileQuery(files[i])
 		if err != nil {
 			return err
 		}
@@ -31,7 +31,7 @@ func MigrateDown() error {
 
 	// Execute each migration file
 	for i := len(files) - 1; i >= 0; i-- {
-		_, err = database.RunFileQuery(files[i])
+		_, err = pgx.RunFileQuery(files[i])
 		if err != nil {
 			return err
 		}

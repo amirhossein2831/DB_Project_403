@@ -1,7 +1,7 @@
 package seed
 
 import (
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"context"
 	"log"
 )
@@ -19,7 +19,7 @@ func LoanSeeder() {
 	`
 
 	// Execute the query
-	_, err := database.GetInstance().Exec(context.Background(), query)
+	_, err := pgx.GetInstance().Exec(context.Background(), query)
 	if err != nil {
 		log.Fatalf("Error seeding profiles: %v", err)
 	}

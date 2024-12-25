@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"DB_Project/src/models"
 	"DB_Project/src/utils"
 	"context"
@@ -16,7 +16,7 @@ func NewCustomerRepository() *CustomerRepository {
 }
 func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	var customers []*models.Customer
-	rows, err := database.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id")
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id")
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
-	row := database.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
+	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
 	err := utils.FillStructFromRowWithJoin(row, &customer)
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (repository *CustomerRepository) Create(customer *models.Customer, profile 
 	ctx := context.Background()
 
 	// Start a transaction
-	tx, err := database.GetInstance().Begin(ctx)
+	tx, err := pgx.GetInstance().Begin(ctx)
 	if err != nil {
 		return err
 	}
@@ -75,11 +75,11 @@ func (repository *CustomerRepository) Create(customer *models.Customer, profile 
 }
 
 func (repository *CustomerRepository) UpdateField(name, id string, value interface{}) error {
-	_, err := database.GetInstance().Exec(context.Background(), fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", name), value, id)
+	_, err := pgx.GetInstance().Exec(context.Background(), fmt.Sprintf("UPDATE customer SET %s = $1 WHERE id = $2", name), value, id)
 	return err
 }
 
 func (repository *CustomerRepository) Delete(id string) error {
-	_, err := database.GetInstance().Exec(context.Background(), "DELETE FROM customer WHERE id=$1", id)
+	_, err := pgx.GetInstance().Exec(context.Background(), "DELETE FROM customer WHERE id=$1", id)
 	return err
 }

@@ -53,7 +53,7 @@ func (service *AccountService) UpdateAccount(req *account.UpdateAccountRequest, 
 	}
 
 	if req.Amount != nil {
-		err := service.Repository.UpdateField("birth_date", id, *req.Amount)
+		err := service.Repository.UpdateField("amount", id, *req.Amount)
 		if err != nil {
 			return err
 		}
@@ -77,5 +77,10 @@ func (service *AccountService) UpdateAccount(req *account.UpdateAccountRequest, 
 }
 
 func (service *AccountService) DeleteAccount(id string) error {
+	_, err := service.Repository.Get(id)
+	if err != nil {
+		return err
+	}
+
 	return service.Repository.Delete(id)
 }

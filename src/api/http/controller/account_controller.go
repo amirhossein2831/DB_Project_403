@@ -4,12 +4,14 @@ import (
 	"DB_Project/src/api/http/request/account"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
+	"DB_Project/src/utils"
 	"errors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4"
 )
 
 var AccountNotFound = errors.New("account not found")
+var AccountFieldShouldBeUnique = errors.New("account field should be unique: ")
 
 type AccountController struct {
 	Service *services.AccountService
@@ -55,9 +57,11 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateAccount(req)
 	if err != nil {
+		if utils.IsErrorCode(err, "23505") {
+			return c.Status(fiber.StatusConflict).SendString(AccountFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
-
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
 

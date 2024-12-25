@@ -32,7 +32,7 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 		customers = append(customers, &customer)
 	}
 
-	return models.FetchCustomersAccount(customers),rows.Err()
+	return models.FetchCustomersAccount(customers), rows.Err()
 }
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {

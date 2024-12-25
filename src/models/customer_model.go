@@ -17,12 +17,12 @@ type Customer struct {
 	Account   []*Account   `json:"account" sql:""`
 }
 
-func FetchCustomersAccount(customers []*Customer) ([]*Customer, error) {
+func FetchCustomersAccount(customers []*Customer) []*Customer {
 	customersMap := make(map[int]*Customer)
 	customersSlice := make([]*Customer, 0)
 
 	if len(customers) == 0 {
-		return nil, nil
+		return nil
 	}
 
 	for _, customer := range customers {
@@ -34,7 +34,7 @@ func FetchCustomersAccount(customers []*Customer) ([]*Customer, error) {
 		}
 	}
 
-	return customersSlice, nil
+	return customersSlice
 }
 
 func FetchCustomerAccount(customers []*Customer) (*Customer, error) {

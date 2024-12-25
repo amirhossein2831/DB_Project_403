@@ -14,10 +14,9 @@ type CustomerRepository struct {
 func NewCustomerRepository() *CustomerRepository {
 	return &CustomerRepository{}
 }
-
 func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	var customers []*models.Customer
-	rows, err := database.GetInstance().Query(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id")
+	rows, err := database.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id")
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +33,7 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
-	row := database.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)
+	row := database.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
 	err := utils.FillStructFromRowWithJoin(row, &customer)
 	if err != nil {
 		return nil, err

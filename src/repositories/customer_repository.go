@@ -14,6 +14,7 @@ type CustomerRepository struct {
 func NewCustomerRepository() *CustomerRepository {
 	return &CustomerRepository{}
 }
+
 func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	var customers []*models.Customer
 	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id")
@@ -28,18 +29,23 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 		customers = append(customers, &customer)
 	}
 
-	return customers, rows.Err()
+	return models.FetchCustomersAccount(customers), rows.Err()
 }
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
-	var customer models.Customer
-	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
-	err := utils.FillStructFromRowWithJoin(row, &customer)
+	var customers []*models.Customer
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+	for rows.Next() {
+		var customer models.Customer
+		err = utils.FillStructFromRowsWithJoin(rows, &customer)
+		customers = append(customers, &customer)
+	}
 
-	return &customer, nil
+	return models.FetchCustomerAccount(customers), nil
 }
 
 func (repository *CustomerRepository) Create(customer *models.Customer, profile *models.Profile) error {

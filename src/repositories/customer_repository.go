@@ -26,10 +26,17 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	for rows.Next() {
 		var customer models.Customer
 		err = utils.FillStructFromRowsWithJoin(rows, &customer)
+		if err != nil {
+			return nil, err
+		}
 		customers = append(customers, &customer)
 	}
 
-	return models.FetchCustomersAccount(customers), rows.Err()
+	if rows.Err() != nil {
+		return nil, err
+	}
+
+	return models.FetchCustomersAccount(customers)
 }
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
@@ -42,10 +49,13 @@ func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	for rows.Next() {
 		var customer models.Customer
 		err = utils.FillStructFromRowsWithJoin(rows, &customer)
+		if err != nil {
+			return nil, err
+		}
 		customers = append(customers, &customer)
 	}
 
-	return models.FetchCustomerAccount(customers), nil
+	return models.FetchCustomerAccount(customers)
 }
 
 func (repository *CustomerRepository) Create(customer *models.Customer, profile *models.Profile) error {

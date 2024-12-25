@@ -4,12 +4,14 @@ import (
 	"DB_Project/src/api/http/request/customer"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
+	"DB_Project/src/utils"
 	"errors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4"
 )
 
 var CustomerNotFound = errors.New("customer not found")
+var FieldShouldBeUnique = errors.New("field should be unique: ")
 
 type CustomerController struct {
 	Service *services.CustomerService
@@ -55,6 +57,9 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateCustomer(req)
 	if err != nil {
+		if utils.IsErrorCode(err, "23505") {
+			return c.Status(fiber.StatusConflict).SendString(FieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
 

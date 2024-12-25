@@ -17,7 +17,7 @@ func NewAccountRepository() *AccountRepository {
 
 func (repository *AccountRepository) List() ([]*models.Account, error) {
 	var accounts []*models.Account
-	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.* ,a.*  FROM account a LEFT JOIN customer c ON a.customer_id =  c.id = a.customer_id")
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT *  FROM account a INNER JOIN customer c ON a.customer_id =  c.id ")
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (repository *AccountRepository) List() ([]*models.Account, error) {
 
 	for rows.Next() {
 		var account models.Account
-		err = utils.FillStructFromRows(rows, &account)
+		err = utils.FillStructFromRowsWithJoin(rows, &account)
 		accounts = append(accounts, &account)
 	}
 
@@ -34,8 +34,8 @@ func (repository *AccountRepository) List() ([]*models.Account, error) {
 
 func (repository *AccountRepository) Get(id string) (*models.Account, error) {
 	var account models.Account
-	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT c.* ,a.*  FROM account a LEFT JOIN customer c ON a.customer_id =  c.id = a.customer_id WHERE a.id=$1", id)
-	err := utils.FillStructFromRow(row, &account)
+	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM account a LEFT JOIN customer c ON a.customer_id=c.id WHERE a.id =$1", id)
+	err := utils.FillStructFromRowWithJoin(row, &account)
 	if err != nil {
 		return nil, err
 	}

@@ -24,7 +24,7 @@ type Account struct {
 	Amount        float64       `json:"amount" sql:"amount"`
 	Status        AccountStatus `json:"status" sql:"status"`
 	CustomerID    int           `json:"customer_id" sql:"customer_id"`
-	Customer      *Customer     `json:"customer" sql:""`
 	CreatedAt     *time.Time    `json:"created_at" sql:"created_at"`
 	ClosedAt      *time.Time    `json:"closed_at" sql:"closed_at"`
+	Customer      *Customer     `json:"customer" sql:""`
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/jackc/pgx/v4"
 	"reflect"
+	"time"
 )
 
 var ShouldBePointerToStruct = errors.New("model must be a pointer to a struct")
@@ -51,12 +52,17 @@ func FillStructFromRowsWithJoin(rows pgx.Rows, model interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		if field.Kind() == reflect.Ptr && field.Type().Elem().Kind() == reflect.Struct {
-			// If the field is a pointer to a struct, initialize it and add its fields to args
-			field.Set(reflect.New(field.Type().Elem()))
-			subFields := field.Elem()
-			for j := 0; j < subFields.NumField(); j++ {
-				if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
-					args = append(args, subFields.Field(j).Addr().Interface())
+			if field.Type() == reflect.TypeOf((*time.Time)(nil)) {
+				// Directly add the *time.Time field to args
+				args = append(args, new(*time.Time))
+			} else {
+				// If it's a pointer to another struct, initialize it and process subfields
+				field.Set(reflect.New(field.Type().Elem()))
+				subFields := field.Elem()
+				for j := 0; j < subFields.NumField(); j++ {
+					if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
+						args = append(args, subFields.Field(j).Addr().Interface())
+					}
 				}
 			}
 		} else {
@@ -90,12 +96,17 @@ func FillStructFromRowsWithJoinMToM(rows pgx.Rows, model interface{}) error {
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		if field.Kind() == reflect.Ptr && field.Type().Elem().Kind() == reflect.Struct {
-			// If the field is a pointer to a struct, initialize it and add its fields to args
-			field.Set(reflect.New(field.Type().Elem()))
-			subFields := field.Elem()
-			for j := 0; j < subFields.NumField(); j++ {
-				if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
-					args = append(args, subFields.Field(j).Addr().Interface())
+			if field.Type() == reflect.TypeOf((*time.Time)(nil)) {
+				// Directly add the *time.Time field to args
+				args = append(args, new(*time.Time))
+			} else {
+				// If the field is a pointer to a struct, initialize it and add its fields to args
+				field.Set(reflect.New(field.Type().Elem()))
+				subFields := field.Elem()
+				for j := 0; j < subFields.NumField(); j++ {
+					if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
+						args = append(args, subFields.Field(j).Addr().Interface())
+					}
 				}
 			}
 		} else if field.Kind() == reflect.Slice && field.Type().Elem().Kind() == reflect.Ptr && field.Type().Elem().Elem().Kind() == reflect.Struct {
@@ -167,11 +178,16 @@ func FillStructFromRowWithJoin(row pgx.Row, model interface{}) error {
 		field := v.Field(i)
 		if field.Kind() == reflect.Ptr && field.Type().Elem().Kind() == reflect.Struct {
 			// If the field is a pointer to a struct, initialize it and add its fields to args
-			field.Set(reflect.New(field.Type().Elem()))
-			subFields := field.Elem()
-			for j := 0; j < subFields.NumField(); j++ {
-				if sqlTag := subFields.Type().Field(i).Tag.Get("sql"); sqlTag != "" {
-					args = append(args, subFields.Field(j).Addr().Interface())
+			if field.Type() == reflect.TypeOf((*time.Time)(nil)) {
+				// Directly add the *time.Time field to args
+				args = append(args, new(*time.Time))
+			} else {
+				field.Set(reflect.New(field.Type().Elem()))
+				subFields := field.Elem()
+				for j := 0; j < subFields.NumField(); j++ {
+					if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
+						args = append(args, subFields.Field(j).Addr().Interface())
+					}
 				}
 			}
 		} else {

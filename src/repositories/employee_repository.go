@@ -25,7 +25,7 @@ func (repository *EmployeeRepository) List() ([]*models.Employee, error) {
 
 	for rows.Next() {
 		var employee models.Employee
-		err = utils.FillStructFromRowsWithJoin(rows, &employee)
+		err = utils.FillStructFromRowsWithJoinMToM(rows, &employee)
 		employees = append(employees, &employee)
 	}
 

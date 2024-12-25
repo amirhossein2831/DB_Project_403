@@ -25,7 +25,7 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 
 	for rows.Next() {
 		var customer models.Customer
-		err = utils.FillStructFromRowsWithJoin(rows, &customer)
+		err = utils.FillStructFromRowsWithJoinMToM(rows, &customer)
 		if err != nil {
 			return nil, err
 		}
@@ -44,7 +44,7 @@ func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var customer models.Customer
-		err = utils.FillStructFromRowsWithJoin(rows, &customer)
+		err = utils.FillStructFromRowsWithJoinMToM(rows, &customer)
 		if err != nil {
 			return nil, err
 		}

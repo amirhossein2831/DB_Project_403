@@ -46,6 +46,13 @@ func (service *InstallmentService) CreateInstallment(req *installment.CreateInst
 }
 
 func (service *InstallmentService) UpdateInstallment(req *installment.UpdateInstallmentRequest, id string) error {
+	if req.LoanID != nil {
+		err := service.Repository.UpdateField("loan_id", id, *req.LoanIDg)
+		if err != nil {
+			return err
+		}
+	}
+
 	if req.AmountPaid != nil {
 		err := service.Repository.UpdateField("amount_paid", id, *req.AmountPaid)
 		if err != nil {

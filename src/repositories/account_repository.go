@@ -45,10 +45,11 @@ func (repository *AccountRepository) Get(id string) (*models.Account, error) {
 
 func (repository *AccountRepository) Create(account *models.Account) error {
 	// Insert account and retrieve the generated account ID
-	return pgx.GetInstance().QueryRow(context.Background(),
-		"INSERT INTO account (account_number, type, amount, status, customer_id) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+	_, err := pgx.GetInstance().Exec(context.Background(),
+		"INSERT INTO account (account_number, type, amount, status, customer_id) VALUES ($1, $2, $3, $4, $5)",
 		account.AccountNumber, account.Type, account.Amount, account.Status, account.CustomerID,
-	).Scan(&account.ID)
+	)
+	return err
 }
 
 func (repository *AccountRepository) UpdateField(name, id string, value interface{}) error {

@@ -12,6 +12,7 @@ import (
 
 var EmployeeNotFound = errors.New("employee not found")
 var EmployeeFieldShouldBeUnique = errors.New("employee field should be unique: ")
+var EmployeeIdNotSet = errors.New("employee id should be set")
 
 type EmployeeController struct {
 	Service *services.EmployeeService
@@ -36,6 +37,9 @@ func (controller *EmployeeController) List(c fiber.Ctx) error {
 
 func (controller *EmployeeController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(EmployeeIdNotSet.Error())
+	}
 
 	res, err := controller.Service.GetEmployee(id)
 	if err != nil {
@@ -67,6 +71,9 @@ func (controller *EmployeeController) Create(c fiber.Ctx) error {
 
 func (controller *EmployeeController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(EmployeeIdNotSet.Error())
+	}
 
 	req := new(employee.UpdateEmployeeRequest)
 	if err := c.Bind().Body(req); err != nil {
@@ -83,6 +90,10 @@ func (controller *EmployeeController) Update(c fiber.Ctx) error {
 
 func (controller *EmployeeController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(EmployeeIdNotSet.Error())
+	}
+
 	err := controller.Service.DeleteEmployee(id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

@@ -12,6 +12,7 @@ import (
 
 var AccountNotFound = errors.New("account not found")
 var AccountFieldShouldBeUnique = errors.New("account field should be unique: ")
+var AccountIdNotSet = errors.New("account id should be set")
 
 type AccountController struct {
 	Service *services.AccountService
@@ -36,7 +37,10 @@ func (controller *AccountController) List(c fiber.Ctx) error {
 
 func (controller *AccountController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
-
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+	}
+	
 	res, err := controller.Service.GetAccount(id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -67,6 +71,9 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 
 func (controller *AccountController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+	}
 
 	req := new(account.UpdateAccountRequest)
 	if err := c.Bind().Body(req); err != nil {
@@ -83,6 +90,10 @@ func (controller *AccountController) Update(c fiber.Ctx) error {
 
 func (controller *AccountController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
+	if id == "" {
+		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+	}
+
 	err := controller.Service.DeleteAccount(id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

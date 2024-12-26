@@ -1,7 +1,7 @@
 package seed
 
 import (
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"DB_Project/src/database/seed"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
@@ -41,14 +41,14 @@ func beforeMigrate() {
 	}
 
 	// Initialize Database
-	err = database.Init()
+	err = pgx.Init()
 	if err != nil {
 		log.Fatalf("Database Service: Failed to Initialize: %v.    timestamp: %s", err, time.Now().String())
 	}
 }
 
 func afterMigrate() {
-	err := database.Close()
+	err := pgx.Close()
 	if err != nil {
 		log.Fatalf("Databasde Service: Failed to close database. %v.    timestamp: %s \n", err, time.Now().String())
 	}

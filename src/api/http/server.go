@@ -2,7 +2,9 @@ package http
 
 import (
 	"DB_Project/src/api/http/routes"
+	"DB_Project/src/pkg/validation"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/recover"
@@ -20,7 +22,9 @@ func Init() error {
 
 func getNewRouter() {
 	once.Do(func() {
-		app = fiber.New()
+		app = fiber.New(fiber.Config{
+			StructValidator: &validation.StructValidator{Validator: validator.New()},
+		})
 
 		// append middleware here
 		app.Use(recover.New())
@@ -37,7 +41,12 @@ func initServer() error {
 	{
 		v1 := api.Group("/v1")
 		{
-			routes.UserRoute(v1)
+			routes.CustomerRoute(v1)
+			routes.EmployeeRoute(v1)
+			routes.AccountRoute(v1)
+			routes.TransactionRoute(v1)
+			routes.LoanRoute(v1)
+			routes.InstallmentRoute(v1)
 		}
 	}
 

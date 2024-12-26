@@ -2,7 +2,7 @@ package bootstrap
 
 import (
 	"DB_Project/src/api/http"
-	"DB_Project/src/database"
+	"DB_Project/src/database/connection/pgx"
 	"context"
 	"github.com/joho/godotenv"
 	"log"
@@ -26,12 +26,12 @@ func Init() {
 	}
 	log.Printf("ENV Service: Env variable initial successfully.    timestamp: %s \n", time.Now().String())
 
-	// Initialize Database
-	err = database.Init()
+	// Initialize pgx:Database
+	err = pgx.Init()
 	if err != nil {
-		log.Fatalf("Database Service: Failed to Initialize: %v.    timestamp: %s", err, time.Now().String())
+		log.Fatalf("Database:pgx Service: Failed to Initialize: %v.    timestamp: %s", err, time.Now().String())
 	}
-	log.Printf("Database Service: Database  initial successfully.    timestamp: %s \n", time.Now().String())
+	log.Printf("Database:pgx Service: Database  initial successfully.    timestamp: %s \n", time.Now().String())
 
 	//Initialize http server
 	go func() {
@@ -43,22 +43,28 @@ func Init() {
 		}
 	}()
 
+	// app started ...
 	time.Sleep(50 * time.Millisecond)
 	log.Printf("Application is now running.Press CTRL-C to exit.    timestamp: %s \n", time.Now().String())
 	<-sc
 
+	// Shutting down application
 	log.Printf("Application shutting down....    timestamp: %s \n", time.Now().String())
-	err = database.Close()
+
+	// Close Database:pgx
+	err = pgx.Close()
 	if err != nil {
 		log.Fatalf("Databasde Service: Failed to close database. %v.    timestamp: %s \n", err, time.Now().String())
 	}
 	log.Printf("Databasde Service: database close sucessfully.    timestamp: %s \n", time.Now().String())
 
+	// shutdown httpserver
 	err = http.ShutdownServer()
 	if err != nil {
 		log.Fatalf("HTTP Service: Failed to shutdown server. %v.    timestamp: %s \n", err, time.Now().String())
 	}
 	log.Printf("HTTP Service: server shutdwon sucessfully.    timestamp: %s \n", time.Now().String())
 
+	// wait for every thing down
 	time.Sleep(1 * time.Second)
 }

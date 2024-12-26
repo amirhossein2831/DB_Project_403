@@ -30,7 +30,6 @@ func (service *InstallmentService) CreateInstallment(req *installment.CreateInst
 	dueDate, _ := time.Parse("2006-01-02", req.DueDate)
 	if req.PaidDate != nil {
 		paidDate, _ = time.Parse("2006-01-02", *req.PaidDate)
-
 	}
 
 	installment := &models.Installment{

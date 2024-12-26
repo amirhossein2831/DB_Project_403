@@ -13,8 +13,8 @@ type Customer struct {
 	ID        int          `json:"id" sql:"id"`
 	Type      CustomerType `json:"type" sql:"type"`
 	ProfileID int          `json:"profile_id" sql:"profile_id"`
-	Profile   *Profile     `json:"profile" sql:""`
-	Account   []*Account   `json:"account" sql:""`
+	Profile   *Profile     `json:"profile" sql:"profile"`
+	Account   []*Account   `json:"account" sql:"account"`
 }
 
 func FetchCustomersAccount(customers []*Customer) []*Customer {

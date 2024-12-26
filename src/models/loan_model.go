@@ -28,5 +28,5 @@ type Loan struct {
 	RepaymentPeriod int        `json:"repayment_period" sql:"repayment_period"`
 	CreatedAt       time.Time  `json:"created_at" sql:"created_at"`
 	FinishedAt      time.Time  `json:"finished_at" sql:"finished_at"`
-	Customer        *Customer  `json:"customer" sql:"-"`
+	Customer        *Customer  `json:"customer" sql:"customer"`
 }

@@ -9,6 +9,6 @@ type Transaction struct {
 	SourceAccountId      int        `json:"description" sql:"source_account_id"`
 	DestinationAccountId *int       `json:"type" sql:"destination_account_id"`
 	CreatedAt            *time.Time `json:"created_at" sql:"created_at"`
-	SourceAccount        *Account   `json:"source_account" sql:"source_account"`
+	SourceAccount        *Account   `json:"source_account" sql:""`
 	DestinationAccount   *Account   `json:"destination_account" sql:"-"`
 }

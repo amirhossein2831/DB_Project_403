@@ -17,7 +17,7 @@ type Customer struct {
 	Account   []*Account   `json:"account" sql:""`
 }
 
-func FetchCustomersAccount(customers []*Customer) []*Customer {
+func FetchCustomersAccounts(customers []*Customer) []*Customer {
 	customersMap := make(map[int]*Customer)
 	customersSlice := make([]*Customer, 0)
 
@@ -37,7 +37,7 @@ func FetchCustomersAccount(customers []*Customer) []*Customer {
 	return customersSlice
 }
 
-func FetchCustomerAccount(customers []*Customer) (*Customer, error) {
+func FetchCustomerAccounts(customers []*Customer) (*Customer, error) {
 	if len(customers) == 0 {
 		return nil, pgx.ErrNoRows
 	}

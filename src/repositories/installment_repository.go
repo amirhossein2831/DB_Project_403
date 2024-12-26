@@ -32,6 +32,26 @@ func (repository *InstallmentRepository) List() ([]*models.Installment, error) {
 	return installments, rows.Err()
 }
 
+func (repository *InstallmentRepository) ListOfInstallmentByLoanId(loanId int) ([]*models.Installment, error) {
+	var installments []*models.Installment
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT * FROM installment WHERE loan_id = $1", loanId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var installment models.Installment
+		err = rows.Scan(&installment.ID, &installment.LoanID, &installment.AmountPaid, &installment.InterestPaid, &installment.TotalPaid, &installment.DueDate, &installment.PaidDate)
+		if err != nil {
+			return nil, err
+		}
+		installments = append(installments, &installment)
+	}
+
+	return installments, rows.Err()
+}
+
 func (repository *InstallmentRepository) Get(id string) (*models.Installment, error) {
 	var installment models.Installment
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM installment i LEFT JOIN loan l ON i.loan_id = l.id WHERE i.id = $1", id)

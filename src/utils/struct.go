@@ -200,7 +200,7 @@ func FillStructFromRowWithJoin(row pgx.Row, model interface{}) error {
 				}
 			}
 		} else {
-			if sqlTag := v.Type().Field(i).Tag.Get("sql"); sqlTag != "" {
+			if sqlTag := v.Type().Field(i).Tag.Get("sql"); sqlTag != "-" && sqlTag != "" {
 				args = append(args, v.Field(i).Addr().Interface())
 			}
 		}

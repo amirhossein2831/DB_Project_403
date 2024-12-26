@@ -9,10 +9,13 @@ import (
 )
 
 type LoanRepository struct {
+	InstallmentRepository *InstallmentRepository
 }
 
 func NewLoanRepository() *LoanRepository {
-	return &LoanRepository{}
+	return &LoanRepository{
+		InstallmentRepository: NewInstallmentRepository(),
+	}
 }
 
 func (repository *LoanRepository) List() ([]*models.Loan, error) {
@@ -25,11 +28,20 @@ func (repository *LoanRepository) List() ([]*models.Loan, error) {
 
 	for rows.Next() {
 		var loan models.Loan
-		err = utils.FillStructFromRowsWithJoin(rows, &loan)
+		err = utils.FillStructFromRowsWithJoinMToM(rows, &loan)
 		if err != nil {
 			return nil, err
 		}
 		loans = append(loans, &loan)
+	}
+
+	for _, loan := range loans {
+		var installments []*models.Installment
+		installments, err = repository.InstallmentRepository.ListOfInstallmentByLoanId(loan.ID)
+		if err != nil {
+			return nil, err
+		}
+		loan.Installments = installments
 	}
 
 	return loans, rows.Err()
@@ -39,11 +51,15 @@ func (repository *LoanRepository) Get(id string) (*models.Loan, error) {
 	var loan models.Loan
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM loan l LEFT JOIN customer c ON l.customer_id = c.id WHERE l.id = $1", id)
 	err := utils.FillStructFromRowWithJoin(row, &loan)
+
+	var installments []*models.Installment
+	installments, err = repository.InstallmentRepository.ListOfInstallmentByLoanId(loan.ID)
 	if err != nil {
 		return nil, err
 	}
+	loan.Installments = installments
 
-	return &loan, nil
+	return &loan, err
 }
 
 func (repository *LoanRepository) Create(loan *models.Loan) error {

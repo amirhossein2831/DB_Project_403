@@ -2,7 +2,6 @@ package loan
 
 import (
 	"DB_Project/src/models"
-	"time"
 )
 
 type UpdateLoanRequest struct {
@@ -12,5 +11,5 @@ type UpdateLoanRequest struct {
 	Amount          *float64           `json:"amount" validate:"omitempty,gt=0"`
 	InterestRate    *float32           `json:"interest_rate" validate:"omitempty,gt=0"`
 	RepaymentPeriod *int               `json:"repayment_period" validate:"omitempty,gt=0"`
-	FinishedAt      *time.Time         `json:"finished_at,omitempty" validate:"omitempty"`
+	FinishedAt      *string            `json:"finished_at,omitempty" validate:"omitempty,datetime=2006-01-02"`
 }

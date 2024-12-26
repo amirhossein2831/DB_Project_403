@@ -1,4 +1,4 @@
-package insallment
+package installment
 
 type CreateInstallmentRequest struct {
 	LoanID       int     `json:"loan_id" validate:"required,gt=0"`

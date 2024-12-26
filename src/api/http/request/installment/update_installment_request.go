@@ -1,4 +1,4 @@
-package insallment
+package installment
 
 type UpdateInstallmentRequest struct {
 	LoanID       *int     `json:"loan_id" validate:"omitempty,gt=0"`

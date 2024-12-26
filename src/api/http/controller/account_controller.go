@@ -12,6 +12,7 @@ import (
 
 var AccountNotFound = errors.New("account not found")
 var AccountFieldShouldBeUnique = errors.New("account field should be unique: ")
+var AccountRelationNotValid = errors.New("there is no record found for given fk relation in account: ")
 var AccountIdNotSet = errors.New("account id should be set")
 
 type AccountController struct {
@@ -40,7 +41,7 @@ func (controller *AccountController) Get(c fiber.Ctx) error {
 	if id == "" {
 		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
 	}
-	
+
 	res, err := controller.Service.GetAccount(id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -63,6 +64,9 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(AccountFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(AccountRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

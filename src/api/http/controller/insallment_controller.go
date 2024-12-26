@@ -13,6 +13,7 @@ import (
 
 var InstallmentNotFound = errors.New("installment not found")
 var InstallmentFieldShouldBeUnique = errors.New("installment field should be unique: ")
+var InsallmentRelationNotValid = errors.New("there is no record found for given fk relation in installment: ")
 var InstallmentIdNotSet = errors.New("installment id should be set")
 
 type InstallmentController struct {
@@ -64,6 +65,9 @@ func (controller *InstallmentController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(InstallmentFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(InsallmentRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

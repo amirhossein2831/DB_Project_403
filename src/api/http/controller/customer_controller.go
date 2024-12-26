@@ -12,6 +12,7 @@ import (
 
 var CustomerNotFound = errors.New("customer not found")
 var CustomerFieldShouldBeUnique = errors.New("customer field should be unique: ")
+var CustomerRelationNotValid = errors.New("there is no record found for given fk relation in customer: ")
 var CustomerIdNotSet = errors.New("customer id should be set")
 
 type CustomerController struct {
@@ -63,6 +64,9 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(CustomerFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(CustomerRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

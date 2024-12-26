@@ -12,6 +12,7 @@ import (
 
 var EmployeeNotFound = errors.New("employee not found")
 var EmployeeFieldShouldBeUnique = errors.New("employee field should be unique: ")
+var EmployeeRelationNotValid = errors.New("there is no record found for given fk relation in employee: ")
 var EmployeeIdNotSet = errors.New("employee id should be set")
 
 type EmployeeController struct {
@@ -63,6 +64,9 @@ func (controller *EmployeeController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(EmployeeFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(EmployeeRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

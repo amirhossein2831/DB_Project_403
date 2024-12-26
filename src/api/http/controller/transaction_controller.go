@@ -13,6 +13,7 @@ import (
 
 var TransactionNotFound = errors.New("transaction not found")
 var TransactionFieldShouldBeUnique = errors.New("transaction field should be unique: ")
+var TransactionRelationNotValid = errors.New("there is no record found for given fk relation in transaction: ")
 var TransactionIdNotSet = errors.New("transaction id should be set")
 
 type TransactionController struct {
@@ -64,6 +65,9 @@ func (controller *TransactionController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(TransactionFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(TransactionRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

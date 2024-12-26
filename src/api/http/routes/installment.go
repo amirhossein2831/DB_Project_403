@@ -8,9 +8,9 @@ import (
 func InstallmentRoute(router fiber.Router) {
 	installmentController := controller.NewInstallmentController()
 
-	router.Get("/installment", installmentController.List)
-	router.Get("/installment/:id", installmentController.Get)
-	router.Post("/installment", installmentController.Create)
-	router.Patch("/installment/:id", installmentController.Update)
-	router.Delete("/installment/:id", installmentController.Delete)
+	router.Get("/installments", installmentController.List)
+	router.Get("/installments/:id", installmentController.Get)
+	router.Post("/installments", installmentController.Create)
+	router.Patch("/installments/:id", installmentController.Update)
+	router.Delete("/installments/:id", installmentController.Delete)
 }

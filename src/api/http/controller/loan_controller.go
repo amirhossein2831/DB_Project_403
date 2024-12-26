@@ -13,6 +13,8 @@ import (
 
 var LoanNotFound = errors.New("loan not found")
 var LoanFieldShouldBeUnique = errors.New("loan field should be unique: ")
+var LoanRelationNotValid = errors.New("there is no record found for given fk relation in loan: ")
+
 var LoanIdNotSet = errors.New("loan id should be set")
 
 type LoanController struct {
@@ -64,6 +66,9 @@ func (controller *LoanController) Create(c fiber.Ctx) error {
 	if err != nil {
 		if utils.IsErrorCode(err, "23505") {
 			return c.Status(fiber.StatusConflict).SendString(LoanFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "23503") {
+			return c.Status(fiber.StatusNotFound).SendString(LoanRelationNotValid.Error() + utils.GetErrorConstraintName(err))
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

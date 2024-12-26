@@ -9,15 +9,18 @@ import (
 )
 
 type CustomerRepository struct {
+	AccountRepository *AccountRepository
 }
 
 func NewCustomerRepository() *CustomerRepository {
-	return &CustomerRepository{}
+	return &CustomerRepository{
+		AccountRepository: NewAccountRepository(),
+	}
 }
 
 func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	var customers []*models.Customer
-	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id")
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT * FROM customer c INNER JOIN profile p ON c.profile_id = p.id")
 	if err != nil {
 		return nil, err
 	}
@@ -25,33 +28,42 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 
 	for rows.Next() {
 		var customer models.Customer
-		err = utils.FillStructFromRowsWithJoinMToM(rows, &customer)
+		err = utils.FillStructFromRowsWithJoin(rows, &customer)
 		if err != nil {
 			return nil, err
 		}
 		customers = append(customers, &customer)
 	}
 
-	return models.FetchCustomersAccounts(customers), rows.Err()
+	for _, customer := range customers {
+		var accounts []*models.Account
+		accounts, err = repository.AccountRepository.ListByCustomerId(customer.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		customer.Account = accounts
+	}
+
+	return customers, rows.Err()
 }
 
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
-	var customers []*models.Customer
-	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT c.*, p.*, a.* FROM customer c LEFT JOIN profile p ON c.profile_id = p.id RIGHT JOIN account a ON c.id = a.customer_id WHERE c.id=$1", id)
+	var customer models.Customer
+	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)
+	err := utils.FillStructFromRowWithJoin(row, &customer)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var customer models.Customer
-		err = utils.FillStructFromRowsWithJoinMToM(rows, &customer)
-		if err != nil {
-			return nil, err
-		}
-		customers = append(customers, &customer)
-	}
 
-	return models.FetchCustomerAccounts(customers)
+	var accounts []*models.Account
+	accounts, err = repository.AccountRepository.ListByCustomerId(customer.ID)
+	if err != nil {
+		return nil, err
+	}
+	customer.Account = accounts
+
+	return &customer, nil
 }
 
 func (repository *CustomerRepository) Create(customer *models.Customer, profile *models.Profile) error {

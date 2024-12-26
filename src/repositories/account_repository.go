@@ -32,6 +32,26 @@ func (repository *AccountRepository) List() ([]*models.Account, error) {
 	return accounts, rows.Err()
 }
 
+func (repository *AccountRepository) ListByCustomerId(customerId int) ([]*models.Account, error) {
+	var accounts []*models.Account
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT *  FROM account WHERE customer_id=$1", customerId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var account models.Account
+		err = rows.Scan(&account.ID, &account.AccountNumber, &account.Type, &account.Amount, &account.Status, &account.CustomerID, &account.CreatedAt, &account.ClosedAt)
+		if err != nil {
+			return nil, err
+		}
+		accounts = append(accounts, &account)
+	}
+
+	return accounts, rows.Err()
+}
+
 func (repository *AccountRepository) Get(id string) (*models.Account, error) {
 	var account models.Account
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM account a LEFT JOIN customer c ON a.customer_id=c.id WHERE a.id =$1", id)

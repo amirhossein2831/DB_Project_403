@@ -28,7 +28,7 @@ func (repository *LoanRepository) List() ([]*models.Loan, error) {
 
 	for rows.Next() {
 		var loan models.Loan
-		err = utils.FillStructFromRowsWithJoinMToM(rows, &loan)
+		err = utils.FillStructFromRowsWithJoin(rows, &loan)
 		if err != nil {
 			return nil, err
 		}

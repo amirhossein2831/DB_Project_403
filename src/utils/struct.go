@@ -61,14 +61,14 @@ func FillStructFromRowsWithJoin(rows pgx.Rows, model interface{}) error {
 					field.Set(reflect.New(field.Type().Elem()))
 					subFields := field.Elem()
 					for j := 0; j < subFields.NumField(); j++ {
-						if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
+						if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" && sqlTag != "-" {
 							args = append(args, subFields.Field(j).Addr().Interface())
 						}
 					}
 				}
 			}
 		} else {
-			if sqlTag := v.Type().Field(i).Tag.Get("sql"); sqlTag != "" {
+			if sqlTag := v.Type().Field(i).Tag.Get("sql"); sqlTag != "" && sqlTag != "-" {
 				args = append(args, v.Field(i).Addr().Interface())
 			}
 		}
@@ -193,7 +193,7 @@ func FillStructFromRowWithJoin(row pgx.Row, model interface{}) error {
 					field.Set(reflect.New(field.Type().Elem()))
 					subFields := field.Elem()
 					for j := 0; j < subFields.NumField(); j++ {
-						if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" {
+						if sqlTag := subFields.Type().Field(j).Tag.Get("sql"); sqlTag != "" && sqlTag != "-" {
 							args = append(args, subFields.Field(j).Addr().Interface())
 						}
 					}

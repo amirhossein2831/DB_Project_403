@@ -36,6 +36,17 @@ func (controller *CustomerController) List(c fiber.Ctx) error {
 	})
 }
 
+func (controller *CustomerController) ListWithFullName(c fiber.Ctx) error {
+	customers, err := controller.Service.GetCustomersWithFullName()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"customers": customers,
+	})
+}
+
 func (controller *CustomerController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

@@ -51,6 +51,9 @@ func (repository *LoanRepository) Get(id string) (*models.Loan, error) {
 	var loan models.Loan
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM loan l LEFT JOIN customer c ON l.customer_id = c.id WHERE l.id = $1", id)
 	err := utils.FillStructFromRowWithJoin(row, &loan)
+	if err != nil {
+		return nil, err
+	}
 
 	var installments []*models.Installment
 	installments, err = repository.InstallmentRepository.ListOfInstallmentByLoanId(loan.ID)

@@ -9,6 +9,7 @@ func CustomerRoute(router fiber.Router) {
 	customerController := controller.NewCustomerController()
 
 	router.Get("/customers", customerController.List)
+	router.Get("/customers-full-name", customerController.ListWithFullName)
 	router.Get("/customers/:id", customerController.Get)
 	router.Post("/customers", customerController.Create)
 	router.Patch("/customers/:id", customerController.Update)

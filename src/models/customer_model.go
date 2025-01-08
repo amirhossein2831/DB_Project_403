@@ -14,3 +14,8 @@ type Customer struct {
 	Profile   *Profile     `json:"profile" sql:""`
 	Account   []*Account   `json:"account" sql:"-"` // "" for relation , "-" not include
 }
+
+type CustomerWithFullName struct {
+	FirstName string `json:"first_name" sql:"first_name"`
+	LastName  string `json:"last_name" sql:"last_name"`
+}

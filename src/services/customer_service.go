@@ -23,6 +23,10 @@ func (service *CustomerService) GetCustomers() ([]*models.Customer, error) {
 	return service.Repository.List()
 }
 
+func (service *CustomerService) GetCustomersWithFullName() ([]*models.CustomerWithFullName, error) {
+	return service.Repository.ListWithFullName()
+}
+
 func (service *CustomerService) GetCustomer(id string) (*models.Customer, error) {
 	return service.Repository.Get(id)
 }

@@ -48,6 +48,24 @@ func (repository *CustomerRepository) List() ([]*models.Customer, error) {
 	return customers, rows.Err()
 }
 
+func (repository *CustomerRepository) ListWithFullName() ([]*models.CustomerWithFullName, error) {
+	var customers []*models.CustomerWithFullName
+	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT p.first_name,p.last_name FROM customer c INNER JOIN profile p ON c.profile_id = p.id")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.CustomerWithFullName
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
+}
+
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)

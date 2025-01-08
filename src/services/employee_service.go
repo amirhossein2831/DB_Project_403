@@ -100,10 +100,10 @@ func (service *EmployeeService) UpdateEmployee(req *customer.UpdateEmployeeReque
 	return nil
 }
 func (service *EmployeeService) DeleteEmployee(id string) error {
-	_, err := service.Repository.Get(id)
+	res, err := service.Repository.Get(id)
 	if err != nil {
 		return err
 	}
 
-	return service.Repository.Delete(id)
+	return service.ProfileRepository.Delete(res.ProfileID)
 }

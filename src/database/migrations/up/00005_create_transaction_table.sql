@@ -12,6 +12,6 @@ CREATE TABLE IF NOT EXISTS transaction (
        source_account_id INT NOT NULL,
        destination_account_id INT,
        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-       CONSTRAINT fk_source_account FOREIGN KEY (source_account_id) REFERENCES account(id) ON DELETE CASCADE,
-       CONSTRAINT fk_destination_account FOREIGN KEY (destination_account_id) REFERENCES account(id) ON DELETE CASCADE
+       CONSTRAINT fk_source_account FOREIGN KEY (source_account_id) REFERENCES account(id) On Delete NO ACTION ,
+       CONSTRAINT fk_destination_account FOREIGN KEY (destination_account_id) REFERENCES account(id) ON DELETE No ACTION
 );

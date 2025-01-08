@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS installment (
        due_date DATE NOT NULL,
        paid_date DATE,
        CONSTRAINT fk_loan FOREIGN KEY (loan_id) REFERENCES loan(id) ON DELETE CASCADE
-);
+);  

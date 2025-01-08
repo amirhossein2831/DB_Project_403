@@ -5,6 +5,7 @@ import (
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"DB_Project/src/utils"
+	"context"
 	"errors"
 	"github.com/gofiber/fiber/v3"
 	"github.com/jackc/pgx/v4"
@@ -26,7 +27,10 @@ func NewAccountController() *AccountController {
 }
 
 func (controller *AccountController) List(c fiber.Ctx) error {
-	accounts, err := controller.Service.GetAccounts()
+	status := fiber.Query[string](c, "status")
+
+	ctx := context.WithValue(context.Background(), "status", status)
+	accounts, err := controller.Service.GetAccounts(ctx)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

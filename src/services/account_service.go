@@ -4,6 +4,7 @@ import (
 	"DB_Project/src/api/http/request/account"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
+	"context"
 )
 
 type AccountService struct {
@@ -16,8 +17,9 @@ func NewAccountService() *AccountService {
 	}
 }
 
-func (service *AccountService) GetAccounts() ([]*models.Account, error) {
-	return service.Repository.List()
+func (service *AccountService) GetAccounts(ctx context.Context) ([]*models.Account, error) {
+	status := ctx.Value("status").(string)
+	return service.Repository.List(status)
 }
 
 func (service *AccountService) GetAccount(id string) (*models.Account, error) {

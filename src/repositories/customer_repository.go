@@ -66,6 +66,35 @@ func (repository *CustomerRepository) ListWithFullName() ([]*models.CustomerWith
 	return customers, nil
 }
 
+func (repository *CustomerRepository) ListWithFullNameAndTotalAmount() ([]*models.CustomerWithFullNameAndAmount, error) {
+	var customers []*models.CustomerWithFullNameAndAmount
+	rows, err := pgx.GetInstance().Query(context.Background(), `
+	SELECT
+		p.first_name AS first_name,
+		p.last_name AS last_name,
+		a.type AS account_type,
+		SUM(a.amount) AS total_balance
+	FROM profile p
+		INNER JOIN customer c ON p.id = c.profile_id
+		INNER JOIN account a ON c.id = a.customer_id
+	GROUP BY p.first_name, p.last_name, a.type
+	ORDER BY p.first_name, p.last_name, a.type;
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.CustomerWithFullNameAndAmount
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
+}
+
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)

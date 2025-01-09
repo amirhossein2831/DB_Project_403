@@ -15,7 +15,6 @@ import (
 var LoanNotFound = errors.New("loan not found")
 var LoanFieldShouldBeUnique = errors.New("loan field should be unique: ")
 var LoanRelationNotValid = errors.New("there is no record found for given fk relation in loan: ")
-
 var LoanIdNotSet = errors.New("loan id should be set")
 
 type LoanController struct {

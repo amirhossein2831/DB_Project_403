@@ -4,6 +4,7 @@ import (
 	"DB_Project/src/api/http/request/transaction"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
+	"context"
 )
 
 type TransactionService struct {
@@ -16,8 +17,10 @@ func NewTransactionService() *TransactionService {
 	}
 }
 
-func (service *TransactionService) GetTransactions() ([]*models.Transaction, error) {
-	return service.Repository.List()
+func (service *TransactionService) GetTransactions(ctx context.Context) ([]*models.Transaction, error) {
+	sourceId := ctx.Value("source_id").(int)
+
+	return service.Repository.List(sourceId)
 }
 
 func (service *TransactionService) GetTransaction(id string) (*models.Transaction, error) {

@@ -15,9 +15,17 @@ func NewTransactionRepository() *TransactionRepository {
 	return &TransactionRepository{}
 }
 
-func (repository *TransactionRepository) List() ([]*models.Transaction, error) {
+func (repository *TransactionRepository) List(sourceId int) ([]*models.Transaction, error) {
+	query := "SELECT *  FROM transaction t  INNER JOIN account sa ON t.source_account_id = sa.id"
+
+	var args []interface{}
+	if sourceId > 0 {
+		query += " WHERE t.source_account_id = $1"
+		args = append(args, sourceId)
+	}
+
 	var transactions []*models.Transaction
-	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT *  FROM transaction t  INNER JOIN account sa ON t.source_account_id = sa.id")
+	rows, err := pgx.GetInstance().Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}

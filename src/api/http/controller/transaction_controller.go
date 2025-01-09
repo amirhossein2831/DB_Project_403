@@ -5,6 +5,7 @@ import (
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"DB_Project/src/utils"
+	"context"
 	"errors"
 
 	"github.com/gofiber/fiber/v3"
@@ -27,7 +28,10 @@ func NewTransactionController() *TransactionController {
 }
 
 func (controller *TransactionController) List(c fiber.Ctx) error {
-	transactions, err := controller.Service.GetTransactions()
+	sourceId := fiber.Query[int](c, "source_id")
+
+	ctx := context.WithValue(context.Background(), "source_id", sourceId)
+	transactions, err := controller.Service.GetTransactions(ctx)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

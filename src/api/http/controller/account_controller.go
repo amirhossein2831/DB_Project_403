@@ -28,8 +28,10 @@ func NewAccountController() *AccountController {
 
 func (controller *AccountController) List(c fiber.Ctx) error {
 	status := fiber.Query[string](c, "status")
+	minAmount := fiber.Query[float64](c, "min_amount")
 
 	ctx := context.WithValue(context.Background(), "status", status)
+	ctx = context.WithValue(ctx, "min_amount", minAmount)
 	accounts, err := controller.Service.GetAccounts(ctx)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())

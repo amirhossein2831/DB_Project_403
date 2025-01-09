@@ -15,13 +15,22 @@ func NewAccountRepository() *AccountRepository {
 	return &AccountRepository{}
 }
 
-func (repository *AccountRepository) List(status string) (accounts []*models.Account, err error) {
+func (repository *AccountRepository) List(status string, minAmount float64) (accounts []*models.Account, err error) {
 	query := "SELECT * FROM account a INNER JOIN customer c ON a.customer_id = c.id"
 
 	var args []interface{}
 	if status != "" && (status == string(models.ActiveAccountStatus) || status == string(models.ClosedAccountStatus) || status == string(models.PendingAccountStatus)) {
 		query += " WHERE a.status = $1"
 		args = append(args, status)
+	}
+
+	if minAmount > 0 {
+		if len(args) > 0 {
+			query += " AND a.amount >= $2"
+		} else {
+			query += " WHERE a.amount >= $1"
+		}
+		args = append(args, minAmount)
 	}
 
 	rows, err := pgx.GetInstance().Query(context.Background(), query, args...)

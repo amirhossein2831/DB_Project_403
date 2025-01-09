@@ -19,7 +19,9 @@ func NewAccountService() *AccountService {
 
 func (service *AccountService) GetAccounts(ctx context.Context) ([]*models.Account, error) {
 	status := ctx.Value("status").(string)
-	return service.Repository.List(status)
+	minAmount := ctx.Value("min_amount").(float64)
+
+	return service.Repository.List(status, minAmount)
 }
 
 func (service *AccountService) GetAccount(id string) (*models.Account, error) {

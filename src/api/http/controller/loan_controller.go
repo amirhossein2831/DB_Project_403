@@ -5,6 +5,7 @@ import (
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"DB_Project/src/utils"
+	"context"
 	"errors"
 
 	"github.com/gofiber/fiber/v3"
@@ -28,7 +29,10 @@ func NewLoanController() *LoanController {
 }
 
 func (controller *LoanController) List(c fiber.Ctx) error {
-	loans, err := controller.Service.GetLoans()
+	status := fiber.Query[string](c, "status")
+
+	ctx := context.WithValue(context.Background(), "status", status)
+	loans, err := controller.Service.GetLoans(ctx)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

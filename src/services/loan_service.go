@@ -4,6 +4,7 @@ import (
 	"DB_Project/src/api/http/request/loan"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
+	"context"
 	"time"
 )
 
@@ -17,8 +18,9 @@ func NewLoanService() *LoanService {
 	}
 }
 
-func (service *LoanService) GetLoans() ([]*models.Loan, error) {
-	return service.Repository.List()
+func (service *LoanService) GetLoans(ctx context.Context) ([]*models.Loan, error) {
+	status := ctx.Value("status").(string)
+	return service.Repository.List(status)
 }
 
 func (service *LoanService) GetLoan(id string) (*models.Loan, error) {

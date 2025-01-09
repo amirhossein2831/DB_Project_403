@@ -18,9 +18,17 @@ func NewLoanRepository() *LoanRepository {
 	}
 }
 
-func (repository *LoanRepository) List() ([]*models.Loan, error) {
+func (repository *LoanRepository) List(status string) ([]*models.Loan, error) {
+	query := "SELECT * FROM loan l INNER JOIN customer c ON l.customer_id = c.id"
+
+	var args []interface{}
+	if status != "" && (status == string(models.PendingLoanStatus) || status == string(models.ApprovedLoanStatus) || status == string(models.RepaidLoanStatus) || status == string(models.DefaultedLoanStatus)) {
+		query += " WHERE l.status = $1"
+		args = append(args, status)
+	}
+	
 	var loans []*models.Loan
-	rows, err := pgx.GetInstance().Query(context.Background(), "SELECT * FROM loan l INNER JOIN customer c ON l.customer_id = c.id")
+	rows, err := pgx.GetInstance().Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}

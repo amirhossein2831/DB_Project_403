@@ -40,3 +40,16 @@ type CustomerWithMostLoan struct {
 	Type       string `json:"type" sql:"type"`
 	LoanNumber int    `json:"loan_number" sql:"loan_number"`
 }
+
+type CustomerWithPenaltyInstallment struct {
+	FirstName  string  `json:"first_name" sql:"first_name"`
+	LastName   string  `json:"last_name" sql:"last_name"`
+	LoadID     int     `json:"loan_id" sql:"loan_id"`
+	LoanAmount float64 `json:"loan_amount" sql:"loan_amount"`
+}
+
+type CustomerWithMostAmount struct {
+	FirstName   string  `json:"first_name" sql:"first_name"`
+	LastName    string  `json:"last_name" sql:"last_name"`
+	TotalAmount float64 `json:"Total_amount" sql:"Total_amount"`
+}

@@ -80,6 +80,28 @@ func (controller *CustomerController) ListWithMostLoan(c fiber.Ctx) error {
 	})
 }
 
+func (controller *CustomerController) ListWithInstallmentsPenalty(c fiber.Ctx) error {
+	customers, err := controller.Service.GetCustomerWithInstallmentsPenalty()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"customers": customers,
+	})
+}
+
+func (controller *CustomerController) ListWithMostAmount(c fiber.Ctx) error {
+	customers, err := controller.Service.GetCustomerWithMostAmount()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"customers": customers,
+	})
+}
+
 func (controller *CustomerController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

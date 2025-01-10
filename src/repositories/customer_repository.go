@@ -168,6 +168,79 @@ func (repository *CustomerRepository) ListWithMostLoan() ([]*models.CustomerWith
 	return customers, nil
 }
 
+func (repository *CustomerRepository) ListWithInstallmentsPenalty() ([]*models.CustomerWithPenaltyInstallment, error) {
+	var customers []*models.CustomerWithPenaltyInstallment
+	rows, err := pgx.GetInstance().Query(context.Background(), `
+	SELECT
+		p.first_name,
+		p.last_name,
+		l.id AS loan_id,
+		l.amount AS loan_amount
+	FROM
+		customer c
+			JOIN
+		profile p ON c.profile_id = p.id
+			JOIN
+		loan l ON c.id = l.customer_id
+			JOIN
+		installment i ON l.id = i.loan_id
+	WHERE
+		(i.paid_date IS NULL AND i.due_date < CURRENT_DATE)
+	   OR
+		(i.paid_date > i.due_date)
+	group by l.id, p.last_name, p.first_name, l.amount;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.CustomerWithPenaltyInstallment
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
+}
+
+func (repository *CustomerRepository) ListWithMostAmount() ([]*models.CustomerWithMostAmount, error) {
+	var customers []*models.CustomerWithMostAmount
+	rows, err := pgx.GetInstance().Query(context.Background(), `
+	SELECT
+		p.first_name,
+		p.last_name,
+		SUM(a.amount) AS total_amount
+	FROM
+		customer c
+			JOIN
+		profile p ON c.profile_id = p.id
+			JOIN
+		account a ON c.id = a.customer_id
+	GROUP BY
+		p.first_name, p.last_name
+	ORDER BY
+		total_amount DESC
+	LIMIT 5;
+	`)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.CustomerWithMostAmount
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
+}
+
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)

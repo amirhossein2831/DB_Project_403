@@ -39,6 +39,14 @@ func (service *CustomerService) GetCustomerWithMostLoan() ([]*models.CustomerWit
 	return service.Repository.ListWithMostLoan()
 }
 
+func (service *CustomerService) GetCustomerWithInstallmentsPenalty() ([]*models.CustomerWithPenaltyInstallment, error) {
+	return service.Repository.ListWithInstallmentsPenalty()
+}
+
+func (service *CustomerService) GetCustomerWithMostAmount() ([]*models.CustomerWithMostAmount, error) {
+	return service.Repository.ListWithMostAmount()
+}
+
 func (service *CustomerService) GetCustomer(id string) (*models.Customer, error) {
 	return service.Repository.Get(id)
 }

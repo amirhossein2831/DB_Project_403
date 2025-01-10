@@ -1,0 +1,14 @@
+-- CREATE OR REPLACE FUNCTION set_account_creation_date()
+-- RETURNS TRIGGER AS $$
+-- BEGIN
+--     NEW.DateOpened := CURRENT_TIMESTAMP;
+--
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+--
+--
+-- CREATE TRIGGER trg_set_account_creation_date
+--     BEFORE INSERT ON Account
+--     FOR EACH ROW
+-- EXECUTE FUNCTION set_account_creation_date();

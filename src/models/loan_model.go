@@ -18,6 +18,7 @@ const (
 	ApprovedLoanStatus  LoanStatus = "approved"
 	RepaidLoanStatus    LoanStatus = "repaid"
 	DefaultedLoanStatus LoanStatus = "defaulted"
+	FinishedLoanStatus  LoanStatus = "finished"
 )
 
 type Loan struct {

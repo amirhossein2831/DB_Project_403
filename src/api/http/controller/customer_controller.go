@@ -14,6 +14,7 @@ var CustomerNotFound = errors.New("customer not found")
 var CustomerFieldShouldBeUnique = errors.New("customer field should be unique: ")
 var CustomerRelationNotValid = errors.New("there is no record found for given fk relation in customer: ")
 var CustomerIdNotSet = errors.New("customer id should be set")
+var CustomerHasActiveLoan = errors.New("customer has active loan")
 
 type CustomerController struct {
 	Service *services.CustomerService
@@ -169,6 +170,9 @@ func (controller *CustomerController) Delete(c fiber.Ctx) error {
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return c.Status(fiber.StatusNotFound).SendString(CustomerNotFound.Error())
+		}
+		if utils.IsErrorCode(err, "P0001") {
+			return c.Status(fiber.StatusUnprocessableEntity).SendString(CustomerHasActiveLoan.Error())
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

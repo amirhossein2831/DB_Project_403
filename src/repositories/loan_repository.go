@@ -22,7 +22,7 @@ func (repository *LoanRepository) List(status string) ([]*models.Loan, error) {
 	query := "SELECT * FROM loan l INNER JOIN customer c ON l.customer_id = c.id"
 
 	var args []interface{}
-	if status != "" && (status == string(models.PendingLoanStatus) || status == string(models.ApprovedLoanStatus) || status == string(models.RepaidLoanStatus) || status == string(models.DefaultedLoanStatus)) {
+	if status != "" && (status == string(models.PendingLoanStatus) || status == string(models.ApprovedLoanStatus) || status == string(models.RepaidLoanStatus) || status == string(models.DefaultedLoanStatus)) || status == string(models.FinishedLoanStatus) {
 		query += " WHERE l.status = $1"
 		args = append(args, status)
 	}

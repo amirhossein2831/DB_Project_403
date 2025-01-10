@@ -16,6 +16,8 @@ var TransactionNotFound = errors.New("transaction not found")
 var TransactionFieldShouldBeUnique = errors.New("transaction field should be unique: ")
 var TransactionRelationNotValid = errors.New("there is no record found for given fk relation in transaction: ")
 var TransactionIdNotSet = errors.New("transaction id should be set")
+var NotEnoughAmount = errors.New("account Amount is not enough")
+var DestinationIdNotSet = errors.New("destination id not set")
 
 type TransactionController struct {
 	Service *services.TransactionService
@@ -72,6 +74,12 @@ func (controller *TransactionController) Create(c fiber.Ctx) error {
 		}
 		if utils.IsErrorCode(err, "23503") {
 			return c.Status(fiber.StatusNotFound).SendString(TransactionRelationNotValid.Error() + utils.GetErrorConstraintName(err))
+		}
+		if utils.IsErrorCode(err, "P0001") {
+			return c.Status(fiber.StatusUnprocessableEntity).SendString(NotEnoughAmount.Error())
+		}
+		if utils.IsErrorCode(err, "P0002") {
+			return c.Status(fiber.StatusBadRequest).SendString(DestinationIdNotSet.Error())
 		}
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

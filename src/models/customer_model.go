@@ -32,3 +32,11 @@ type CustomerWithAccountNumber struct {
 	LastName      string `json:"last_name" sql:"last_name"`
 	AccountNumber int    `json:"account_number" sql:"account_number"`
 }
+
+type CustomerWithMostLoan struct {
+	ID         int    `json:"id" sql:"id"`
+	FirstName  string `json:"first_name" sql:"first_name"`
+	LastName   string `json:"last_name" sql:"last_name"`
+	Type       string `json:"type" sql:"type"`
+	LoanNumber int    `json:"loan_number" sql:"loan_number"`
+}

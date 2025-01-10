@@ -120,6 +120,54 @@ func (repository *CustomerRepository) ListWithFullNameAndAccountNumber() ([]*mod
 	return customers, nil
 }
 
+func (repository *CustomerRepository) ListWithMostLoan() ([]*models.CustomerWithMostLoan, error) {
+	var customers []*models.CustomerWithMostLoan
+	rows, err := pgx.GetInstance().Query(context.Background(), `
+	WITH LoanCounts AS (
+		SELECT
+			c.id AS id,
+			c.type AS type,
+			COUNT(l.id) AS loan_count
+		FROM
+			customer c
+				LEFT JOIN loan l ON c.id = l.customer_id
+		GROUP BY
+			c.id, c.type
+	),
+		 MaxLoanCount AS (
+			 SELECT
+				 MAX(loan_count) AS max_loan_count
+			 FROM
+				 LoanCounts
+		 )
+	SELECT
+		lc.id,
+		p.first_name,
+		p.last_name,
+		lc.type,
+		lc.loan_count
+	FROM
+		LoanCounts lc
+			CROSS JOIN MaxLoanCount mlc
+			INNER JOIN profile p on p.id = lc.id
+	WHERE
+		lc.loan_count = mlc.max_loan_count;
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.CustomerWithMostLoan
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
+}
+
 func (repository *CustomerRepository) Get(id string) (*models.Customer, error) {
 	var customer models.Customer
 	row := pgx.GetInstance().QueryRow(context.Background(), "SELECT * FROM customer c LEFT JOIN profile p ON c.profile_id = p.id WHERE c.id=$1", id)

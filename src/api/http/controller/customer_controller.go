@@ -69,6 +69,17 @@ func (controller *CustomerController) ListWithFullNameAndAccountNumber(c fiber.C
 	})
 }
 
+func (controller *CustomerController) ListWithMostLoan(c fiber.Ctx) error {
+	customers, err := controller.Service.GetCustomerWithMostLoan()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"customers": customers,
+	})
+}
+
 func (controller *CustomerController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

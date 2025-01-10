@@ -11,11 +11,11 @@ func EmployeeSeeder() {
 
 	query := `
 	INSERT INTO employee (profile_id, position)VALUES
-		(1, 'Manager'),
-		(2, 'Cashier'),
-		(3, 'Loan Officer'),
-		(4, 'IT Specialist'),
-		(5, 'Accountant');
+		(6, 'Manager'),
+		(7, 'Cashier'),
+		(8, 'Loan Officer'),
+		(9, 'IT Specialist'),
+		(10, 'Accountant');
 	`
 
 	// Execute the query

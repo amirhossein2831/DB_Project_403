@@ -26,10 +26,12 @@ func (service *InstallmentService) GetInstallment(id string) (*models.Installmen
 }
 
 func (service *InstallmentService) CreateInstallment(req *installment.CreateInstallmentRequest) error {
-	var paidDate time.Time
+	var paidDate *time.Time
 	dueDate, _ := time.Parse("2006-01-02", req.DueDate)
 	if req.PaidDate != nil {
-		paidDate, _ = time.Parse("2006-01-02", *req.PaidDate)
+		parseDate, _ := time.Parse("2006-01-02", *req.PaidDate)
+		paidDate = &parseDate
+
 	}
 
 	installment := &models.Installment{
@@ -38,7 +40,7 @@ func (service *InstallmentService) CreateInstallment(req *installment.CreateInst
 		InterestPaid: req.InterestPaid,
 		TotalPaid:    req.TotalPaid,
 		DueDate:      dueDate,
-		PaidDate:     &paidDate,
+		PaidDate:     paidDate,
 	}
 
 	return service.Repository.Create(installment)

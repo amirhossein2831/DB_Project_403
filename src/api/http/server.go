@@ -47,6 +47,7 @@ func initServer() error {
 			routes.TransactionRoute(v1)
 			routes.LoanRoute(v1)
 			routes.InstallmentRoute(v1)
+			routes.ViewsRoute(v1)
 		}
 	}
 

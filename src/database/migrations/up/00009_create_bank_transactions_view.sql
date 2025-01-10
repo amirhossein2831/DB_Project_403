@@ -8,4 +8,5 @@ SELECT t.id,
 FROM transaction t
          INNER JOIN public.account sa ON t.source_account_id = sa.id
          LEFT JOIN public.account da ON t.destination_account_id = da.id
+ORDER BY t.id
 ;

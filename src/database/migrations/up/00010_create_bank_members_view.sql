@@ -14,4 +14,5 @@ FROM
     profile p
         LEFT JOIN employee e ON p.id = e.profile_id
         LEFT JOIN customer c ON p.id = c.profile_id
+ORDER BY p.id
 ;

@@ -23,6 +23,10 @@ func (service *LoanService) GetLoans(ctx context.Context) ([]*models.Loan, error
 	return service.Repository.List(status)
 }
 
+func (service *LoanService) GetLoansWithMinInstallmentsPaid() ([]*models.LoanWithMinInstallmentPain, error) {
+	return service.Repository.ListWithMinInstallmentsPaid()
+}
+
 func (service *LoanService) GetLoan(id string) (*models.Loan, error) {
 	return service.Repository.Get(id)
 }

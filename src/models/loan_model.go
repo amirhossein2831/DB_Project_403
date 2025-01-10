@@ -33,3 +33,12 @@ type Loan struct {
 	Customer        *Customer      `json:"customer" sql:""`
 	Installments    []*Installment `json:"installments" sql:"-"`
 }
+
+type LoanWithMinInstallmentPain struct {
+	ID                    int        `json:"id" sql:"id"`
+	CustomerID            int        `json:"customer_id" sql:"customer_id"`
+	Type                  LoanType   `json:"type" sql:"type"`
+	Status                LoanStatus `json:"status" sql:"status"`
+	Amount                float64    `json:"amount" sql:"amount"`
+	TotalInstallmentsPaid int        `json:"total_installments_paid" sql:"total_installments_paid"`
+}

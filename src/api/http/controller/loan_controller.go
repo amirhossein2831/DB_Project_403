@@ -41,6 +41,17 @@ func (controller *LoanController) List(c fiber.Ctx) error {
 	})
 }
 
+func (controller *LoanController) ListWithMinInstallmentsPaid(c fiber.Ctx) error {
+	loans, err := controller.Service.GetLoansWithMinInstallmentsPaid()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"loans": loans,
+	})
+}
+
 func (controller *LoanController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {

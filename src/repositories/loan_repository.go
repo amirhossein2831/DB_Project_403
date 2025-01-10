@@ -26,7 +26,7 @@ func (repository *LoanRepository) List(status string) ([]*models.Loan, error) {
 		query += " WHERE l.status = $1"
 		args = append(args, status)
 	}
-	
+
 	var loans []*models.Loan
 	rows, err := pgx.GetInstance().Query(context.Background(), query, args...)
 	if err != nil {
@@ -53,6 +53,55 @@ func (repository *LoanRepository) List(status string) ([]*models.Loan, error) {
 	}
 
 	return loans, rows.Err()
+}
+
+func (repository *LoanRepository) ListWithMinInstallmentsPaid() ([]*models.LoanWithMinInstallmentPain, error) {
+	var customers []*models.LoanWithMinInstallmentPain
+	rows, err := pgx.GetInstance().Query(context.Background(), `
+	WITH TotalInstallments AS (
+		SELECT
+			COUNT(*) AS insallment_number,
+			loan_id
+		FROM
+			installment
+		WHERE
+			paid_date IS NOT NULL
+		GROUP BY
+			loan_id
+	),
+		 MinInstallments AS (
+			 SELECT
+				 MIN(insallment_number) AS min_insallment_number
+			 FROM
+				 TotalInstallments
+		 )
+	SELECT
+		t.loan_id as id,
+		l.customer_id,
+		l.type,
+		l.status,
+		l.amount,
+		t.insallment_number as total_installments_paid
+	FROM
+		TotalInstallments t
+			CROSS JOIN MinInstallments m
+			INNER JOIN loan l ON t.loan_id = l.id
+	WHERE
+		t.insallment_number = m.min_insallment_number;
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var customer models.LoanWithMinInstallmentPain
+		err = utils.FillStructFromRows(rows, &customer)
+
+		customers = append(customers, &customer)
+	}
+
+	return customers, nil
 }
 
 func (repository *LoanRepository) Get(id string) (*models.Loan, error) {

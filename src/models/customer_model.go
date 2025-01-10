@@ -26,3 +26,9 @@ type CustomerWithFullNameAndAmount struct {
 	AccountType  string  `json:"account_type"  sql:"account_type"`
 	TotalBalance float64 `json:"total_balance"  sql:"total_balance"`
 }
+
+type CustomerWithAccountNumber struct {
+	FirstName     string `json:"first_name" sql:"first_name"`
+	LastName      string `json:"last_name" sql:"last_name"`
+	AccountNumber int    `json:"account_number" sql:"account_number"`
+}

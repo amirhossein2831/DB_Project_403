@@ -31,6 +31,10 @@ func (service *CustomerService) GetCustomersWithFullNameAndTotalAmount() ([]*mod
 	return service.Repository.ListWithFullNameAndTotalAmount()
 }
 
+func (service *CustomerService) GetCustomerWithFullNameAndAccountNumber() ([]*models.CustomerWithAccountNumber, error) {
+	return service.Repository.ListWithFullNameAndAccountNumber()
+}
+
 func (service *CustomerService) GetCustomer(id string) (*models.Customer, error) {
 	return service.Repository.Get(id)
 }

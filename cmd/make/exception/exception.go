@@ -24,62 +24,63 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
+func CreateException(exceptionName string) {
+	// Convert to snake_case for the file name
+	fileName := toSnakeCase(exceptionName)
+
+	// Define the template file
+	tmplFile := "templates/exception_template.go.tmpl"
+
+	// Parse the template
+	tmpl, err := template.ParseFiles(tmplFile)
+	if err != nil {
+		log.Fatalf("Error parsing template: %v", err)
+	}
+
+	// Prepare the data for the template
+	exception := Exception{
+		ExceptionName: exceptionName,
+		FileName:      fileName,
+	}
+
+	// Define the output file path
+	outputDir := "src/api/http/exception"
+	err = os.MkdirAll(outputDir, 0755) // Make sure the directory exists
+	if err != nil {
+		log.Fatalf("Error creating directories: %v", err)
+	}
+
+	// Output file path
+	outputFile := filepath.Join(outputDir, fmt.Sprintf("%s.go", fileName))
+
+	// Check if the file already exists
+	if _, err := os.Stat(outputFile); err == nil {
+		log.Fatalf("Error: The file %s already exists.\n", outputFile)
+	}
+
+	// Create the output file
+	file, err := os.Create(outputFile)
+	if err != nil {
+		log.Fatalf("Error creating file: %v", err)
+	}
+	defer file.Close()
+
+	// Execute the template and write to the file
+	err = tmpl.Execute(file, exception)
+	if err != nil {
+		log.Fatalf("Error executing template: %v", err)
+	}
+
+	// Success message
+	fmt.Printf("Exception handler %s created successfully at %s\n", exceptionName, outputFile)
+}
+
 // ExceptionCmd for generating the exception file
 var ExceptionCmd = &cobra.Command{
 	Use:   "exception [ExceptionName]",
 	Short: "Create a new exception handler",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// Get the exception name
-		exceptionName := args[0]
-
-		// Convert to snake_case for the file name
-		fileName := toSnakeCase(exceptionName)
-
-		// Define the template file
-		tmplFile := "templates/exception_template.go.tmpl"
-
-		// Parse the template
-		tmpl, err := template.ParseFiles(tmplFile)
-		if err != nil {
-			log.Fatalf("Error parsing template: %v", err)
-		}
-
-		// Prepare the data for the template
-		exception := Exception{
-			ExceptionName: exceptionName,
-			FileName:      fileName,
-		}
-
-		// Define the output file path
-		outputDir := "src/api/http/exception"
-		err = os.MkdirAll(outputDir, 0755) // Make sure the directory exists
-		if err != nil {
-			log.Fatalf("Error creating directories: %v", err)
-		}
-
-		// Output file path
-		outputFile := filepath.Join(outputDir, fmt.Sprintf("%s.go", fileName))
-
-		// Check if the file already exists
-		if _, err := os.Stat(outputFile); err == nil {
-			log.Fatalf("Error: The file %s already exists.\n", outputFile)
-		}
-
-		// Create the output file
-		file, err := os.Create(outputFile)
-		if err != nil {
-			log.Fatalf("Error creating file: %v", err)
-		}
-		defer file.Close()
-
-		// Execute the template and write to the file
-		err = tmpl.Execute(file, exception)
-		if err != nil {
-			log.Fatalf("Error executing template: %v", err)
-		}
-
-		// Success message
-		fmt.Printf("Exception handler %s created successfully at %s\n", exceptionName, outputFile)
+		CreateException(args[0])
 	},
 }

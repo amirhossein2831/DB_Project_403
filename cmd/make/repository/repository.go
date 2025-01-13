@@ -23,7 +23,7 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(re.ReplaceAllString(str, "${1}_${2}"))
 }
 
-func createRepository(repositoryName string) {
+func CreateRepository(repositoryName string) {
 	fileName := toSnakeCase(repositoryName)
 
 	// Define template file and output directory
@@ -79,6 +79,6 @@ var RepositoryCmd = &cobra.Command{
 	Short: "Create a new repository",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		createRepository(args[0])
+		CreateRepository(args[0])
 	},
 }

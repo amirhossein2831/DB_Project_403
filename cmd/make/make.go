@@ -1,6 +1,7 @@
 package make
 
 import (
+	"DB_Project/cmd/make/all"
 	"DB_Project/cmd/make/controller"
 	"DB_Project/cmd/make/exception"
 	"DB_Project/cmd/make/repository"
@@ -20,5 +21,6 @@ func init() {
 		controller.ControllerCmd,
 		service.ServiceCmd,
 		repository.RepositoryCmd,
+		all.AllCmd,
 	)
 }

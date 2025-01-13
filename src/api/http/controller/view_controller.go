@@ -6,17 +6,17 @@ import (
 )
 
 type ViewController struct {
-	Service *services.ViewService
+	service *services.ViewService
 }
 
 func NewViewController() *ViewController {
 	return &ViewController{
-		Service: services.NewViewService(),
+		service: services.NewViewService(),
 	}
 }
 
 func (controller *ViewController) CustomerAccounts(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomerAccountsView()
+	customers, err := controller.service.GetCustomerAccountsView()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
@@ -27,7 +27,7 @@ func (controller *ViewController) CustomerAccounts(c fiber.Ctx) error {
 }
 
 func (controller *ViewController) BankTransactions(c fiber.Ctx) error {
-	customers, err := controller.Service.GetBankTransactionView()
+	customers, err := controller.service.GetBankTransactionView()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}
@@ -38,7 +38,7 @@ func (controller *ViewController) BankTransactions(c fiber.Ctx) error {
 }
 
 func (controller *ViewController) BankMembers(c fiber.Ctx) error {
-	customers, err := controller.Service.GetBankMemberView()
+	customers, err := controller.service.GetBankMemberView()
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
 	}

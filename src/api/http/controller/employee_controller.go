@@ -9,21 +9,21 @@ import (
 )
 
 type EmployeeController struct {
-	Service          *services.EmployeeService
-	ExceptionHandler exception.Exception
+	service          *services.EmployeeService
+	exceptionHandler exception.Exception
 }
 
 func NewEmployeeController() *EmployeeController {
 	return &EmployeeController{
-		Service:          services.NewEmployeeService(),
-		ExceptionHandler: exception.NewEmployeeExceptions(),
+		service:          services.NewEmployeeService(),
+		exceptionHandler: exception.NewEmployeeExceptions(),
 	}
 }
 
 func (controller *EmployeeController) List(c fiber.Ctx) error {
-	employees, err := controller.Service.GetEmployees()
+	employees, err := controller.service.GetEmployees()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -37,9 +37,9 @@ func (controller *EmployeeController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.EmployeeIdNotSet.Error())
 	}
 
-	res, err := controller.Service.GetEmployee(id)
+	res, err := controller.service.GetEmployee(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -52,9 +52,9 @@ func (controller *EmployeeController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.CreateEmployee(req)
+	err := controller.service.CreateEmployee(req)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -70,9 +70,9 @@ func (controller *EmployeeController) Update(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.UpdateEmployee(req, id)
+	err := controller.service.UpdateEmployee(req, id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -84,9 +84,9 @@ func (controller *EmployeeController) Delete(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.EmployeeIdNotSet.Error())
 	}
 
-	err := controller.Service.DeleteEmployee(id)
+	err := controller.service.DeleteEmployee(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

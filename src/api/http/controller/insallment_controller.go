@@ -9,21 +9,21 @@ import (
 )
 
 type InstallmentController struct {
-	Service          *services.InstallmentService
-	ExceptionHandler exception.Exception
+	service          *services.InstallmentService
+	exceptionHandler exception.Exception
 }
 
 func NewInstallmentController() *InstallmentController {
 	return &InstallmentController{
-		Service:          services.NewInstallmentService(),
-		ExceptionHandler: exception.NewInstallmentExceptions(),
+		service:          services.NewInstallmentService(),
+		exceptionHandler: exception.NewInstallmentExceptions(),
 	}
 }
 
 func (controller *InstallmentController) List(c fiber.Ctx) error {
-	installments, err := controller.Service.GetInstallments()
+	installments, err := controller.service.GetInstallments()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -37,9 +37,9 @@ func (controller *InstallmentController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
 	}
 
-	res, err := controller.Service.GetInstallment(id)
+	res, err := controller.service.GetInstallment(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -52,9 +52,9 @@ func (controller *InstallmentController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.CreateInstallment(req)
+	err := controller.service.CreateInstallment(req)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -70,9 +70,9 @@ func (controller *InstallmentController) Update(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.UpdateInstallment(req, id)
+	err := controller.service.UpdateInstallment(req, id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).Send([]byte{})
@@ -84,9 +84,9 @@ func (controller *InstallmentController) Delete(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
 	}
 
-	err := controller.Service.DeleteInstallment(id)
+	err := controller.service.DeleteInstallment(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

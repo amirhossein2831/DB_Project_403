@@ -10,14 +10,14 @@ import (
 )
 
 type TransactionController struct {
-	Service          *services.TransactionService
-	ExceptionHandler exception.Exception
+	service          *services.TransactionService
+	exceptionHandler exception.Exception
 }
 
 func NewTransactionController() *TransactionController {
 	return &TransactionController{
-		Service:          services.NewTransactionService(),
-		ExceptionHandler: exception.NewTransactionExceptions(),
+		service:          services.NewTransactionService(),
+		exceptionHandler: exception.NewTransactionExceptions(),
 	}
 }
 
@@ -25,9 +25,9 @@ func (controller *TransactionController) List(c fiber.Ctx) error {
 	sourceId := fiber.Query[int](c, "source_id")
 
 	ctx := context.WithValue(context.Background(), "source_id", sourceId)
-	transactions, err := controller.Service.GetTransactions(ctx)
+	transactions, err := controller.service.GetTransactions(ctx)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -41,9 +41,9 @@ func (controller *TransactionController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.TransactionIdNotSet.Error())
 	}
 
-	res, err := controller.Service.GetTransaction(id)
+	res, err := controller.service.GetTransaction(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -56,9 +56,9 @@ func (controller *TransactionController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.CreateTransaction(req)
+	err := controller.service.CreateTransaction(req)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -74,9 +74,9 @@ func (controller *TransactionController) Update(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.UpdateTransaction(req, id)
+	err := controller.service.UpdateTransaction(req, id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -88,9 +88,9 @@ func (controller *TransactionController) Delete(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.TransactionIdNotSet.Error())
 	}
 
-	err := controller.Service.DeleteTransaction(id)
+	err := controller.service.DeleteTransaction(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

@@ -9,21 +9,21 @@ import (
 )
 
 type CustomerController struct {
-	Service          *services.CustomerService
-	ExceptionHandler exception.Exception
+	service          *services.CustomerService
+	exceptionHandler exception.Exception
 }
 
 func NewCustomerController() *CustomerController {
 	return &CustomerController{
-		Service:          services.NewCustomerService(),
-		ExceptionHandler: exception.NewCustomerExceptions(),
+		service:          services.NewCustomerService(),
+		exceptionHandler: exception.NewCustomerExceptions(),
 	}
 }
 
 func (controller *CustomerController) List(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomers()
+	customers, err := controller.service.GetCustomers()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -32,9 +32,9 @@ func (controller *CustomerController) List(c fiber.Ctx) error {
 }
 
 func (controller *CustomerController) ListWithFullName(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomersWithFullName()
+	customers, err := controller.service.GetCustomersWithFullName()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -43,9 +43,9 @@ func (controller *CustomerController) ListWithFullName(c fiber.Ctx) error {
 }
 
 func (controller *CustomerController) ListWithFullNameAndTotalAmount(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomersWithFullNameAndTotalAmount()
+	customers, err := controller.service.GetCustomersWithFullNameAndTotalAmount()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -54,9 +54,9 @@ func (controller *CustomerController) ListWithFullNameAndTotalAmount(c fiber.Ctx
 }
 
 func (controller *CustomerController) ListWithFullNameAndAccountNumber(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomerWithFullNameAndAccountNumber()
+	customers, err := controller.service.GetCustomerWithFullNameAndAccountNumber()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -65,9 +65,9 @@ func (controller *CustomerController) ListWithFullNameAndAccountNumber(c fiber.C
 }
 
 func (controller *CustomerController) ListWithMostLoan(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomerWithMostLoan()
+	customers, err := controller.service.GetCustomerWithMostLoan()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -76,9 +76,9 @@ func (controller *CustomerController) ListWithMostLoan(c fiber.Ctx) error {
 }
 
 func (controller *CustomerController) ListWithInstallmentsPenalty(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomerWithInstallmentsPenalty()
+	customers, err := controller.service.GetCustomerWithInstallmentsPenalty()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -87,9 +87,9 @@ func (controller *CustomerController) ListWithInstallmentsPenalty(c fiber.Ctx) e
 }
 
 func (controller *CustomerController) ListWithMostAmount(c fiber.Ctx) error {
-	customers, err := controller.Service.GetCustomerWithMostAmount()
+	customers, err := controller.service.GetCustomerWithMostAmount()
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -103,9 +103,9 @@ func (controller *CustomerController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.CustomerIdNotSet.Error())
 	}
 
-	res, err := controller.Service.GetCustomer(id)
+	res, err := controller.service.GetCustomer(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -118,9 +118,9 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.CreateCustomer(req)
+	err := controller.service.CreateCustomer(req)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -137,9 +137,9 @@ func (controller *CustomerController) Update(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.UpdateCustomer(req, id)
+	err := controller.service.UpdateCustomer(req, id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -151,9 +151,9 @@ func (controller *CustomerController) Delete(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.CustomerIdNotSet.Error())
 	}
 
-	err := controller.Service.DeleteCustomer(id)
+	err := controller.service.DeleteCustomer(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

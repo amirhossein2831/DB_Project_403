@@ -44,7 +44,12 @@ func CreateException(exceptionName string) {
 	}
 
 	// Define the output file path
-	outputDir := "src/api/http/exception"
+	outputDir := os.Getenv("PATH_FOR_EXCEPTION")
+	if outputDir == "" {
+		log.Fatalf("the path is not specific in env, please initiale the PATH_FOR_EXCEPTION variable")
+	}
+
+	// make file
 	if err = os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Error creating directories: %v", err)
 	}

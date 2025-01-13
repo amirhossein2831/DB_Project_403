@@ -45,7 +45,11 @@ func CreateController(controllerName string) {
 	}
 
 	// Define the output file path
-	outputDir := "src/api/http/controller"
+	outputDir := os.Getenv("PATH_FOR_CONTROLLER")
+	if outputDir == "" {
+		log.Fatalf("the path is not specific in env, please initiale the PATH_FOR_CONTROLLER variable")
+	}
+
 	if err = os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Error creating directories: %v", err)
 	}

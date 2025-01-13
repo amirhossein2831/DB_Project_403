@@ -28,7 +28,12 @@ func CreateRepository(repositoryName string) {
 
 	// Define template file and output directory
 	tmplFile := "templates/repository_template.go.tmpl"
-	outputDir := "src/repositories"
+
+	// get output dir
+	outputDir := os.Getenv("PATH_FOR_REPOSITORY")
+	if outputDir == "" {
+		log.Fatalf("the path is not specific in env, please initiale the PATH_FOR_REPOSITORY variable")
+	}
 
 	// Parse the template
 	tmpl, err := template.ParseFiles(tmplFile)

@@ -44,7 +44,12 @@ func CreateService(serviceName string) {
 	}
 
 	// Define the output file path
-	outputDir := "src/services"
+	outputDir := os.Getenv("PATH_FOR_SERVICE")
+	if outputDir == "" {
+		log.Fatalf("the path is not specific in env, please initiale the PATH_FOR_SERVICE variable")
+	}
+
+	// make file
 	if err = os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Error creating directories: %v", err)
 	}

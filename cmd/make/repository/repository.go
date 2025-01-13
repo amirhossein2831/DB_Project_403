@@ -43,8 +43,8 @@ func CreateRepository(repositoryName string) {
 	}
 
 	// Ensure output directory exists
-	err = os.MkdirAll(outputDir, 0755)
-	if err != nil {
+
+	if err = os.MkdirAll(outputDir, 0755); err != nil {
 		log.Fatalf("Error creating directory: %v", err)
 	}
 
@@ -52,7 +52,7 @@ func CreateRepository(repositoryName string) {
 	outputFile := filepath.Join(outputDir, fmt.Sprintf("%s.go", fileName))
 
 	// Check if file already exists
-	if _, err := os.Stat(outputFile); err == nil {
+	if _, err = os.Stat(outputFile); err == nil {
 		log.Fatalf("Error: The file %s already exists.\n", outputFile)
 	}
 

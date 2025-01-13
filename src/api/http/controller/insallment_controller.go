@@ -1,35 +1,29 @@
 package controller
 
 import (
+	"DB_Project/src/api/http/exception"
 	"DB_Project/src/api/http/request/installment"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
-	"DB_Project/src/utils"
-	"errors"
-
 	"github.com/gofiber/fiber/v3"
-	"github.com/jackc/pgx/v4"
 )
 
-var InstallmentNotFound = errors.New("installment not found")
-var InstallmentFieldShouldBeUnique = errors.New("installment field should be unique: ")
-var InsallmentRelationNotValid = errors.New("there is no record found for given fk relation in installment: ")
-var InstallmentIdNotSet = errors.New("installment id should be set")
-
 type InstallmentController struct {
-	Service *services.InstallmentService
+	Service          *services.InstallmentService
+	ExceptionHandler exception.Exception
 }
 
 func NewInstallmentController() *InstallmentController {
 	return &InstallmentController{
-		Service: services.NewInstallmentService(),
+		Service:          services.NewInstallmentService(),
+		ExceptionHandler: exception.NewInstallmentExceptions(),
 	}
 }
 
 func (controller *InstallmentController) List(c fiber.Ctx) error {
 	installments, err := controller.Service.GetInstallments()
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -40,15 +34,12 @@ func (controller *InstallmentController) List(c fiber.Ctx) error {
 func (controller *InstallmentController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
 	}
 
 	res, err := controller.Service.GetInstallment(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(InstallmentNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -63,13 +54,7 @@ func (controller *InstallmentController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateInstallment(req)
 	if err != nil {
-		if utils.IsErrorCode(err, "23505") {
-			return c.Status(fiber.StatusConflict).SendString(InstallmentFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
-		}
-		if utils.IsErrorCode(err, "23503") {
-			return c.Status(fiber.StatusNotFound).SendString(InsallmentRelationNotValid.Error() + utils.GetErrorConstraintName(err))
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -77,7 +62,7 @@ func (controller *InstallmentController) Create(c fiber.Ctx) error {
 func (controller *InstallmentController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
 	}
 
 	req := new(installment.UpdateInstallmentRequest)
@@ -87,7 +72,7 @@ func (controller *InstallmentController) Update(c fiber.Ctx) error {
 
 	err := controller.Service.UpdateInstallment(req, id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).Send([]byte{})
@@ -96,15 +81,12 @@ func (controller *InstallmentController) Update(c fiber.Ctx) error {
 func (controller *InstallmentController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
 	}
 
 	err := controller.Service.DeleteInstallment(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(InstallmentNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

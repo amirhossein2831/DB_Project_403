@@ -1,28 +1,23 @@
 package controller
 
 import (
+	"DB_Project/src/api/http/exception"
 	"DB_Project/src/api/http/request/account"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
-	"DB_Project/src/utils"
 	"context"
-	"errors"
 	"github.com/gofiber/fiber/v3"
-	"github.com/jackc/pgx/v4"
 )
 
-var AccountNotFound = errors.New("account not found")
-var AccountFieldShouldBeUnique = errors.New("account field should be unique: ")
-var AccountRelationNotValid = errors.New("there is no record found for given fk relation in account: ")
-var AccountIdNotSet = errors.New("account id should be set")
-
 type AccountController struct {
-	Service *services.AccountService
+	Service          *services.AccountService
+	ExceptionHandler exception.Exception
 }
 
 func NewAccountController() *AccountController {
 	return &AccountController{
-		Service: services.NewAccountService(),
+		Service:          services.NewAccountService(),
+		ExceptionHandler: exception.NewAccountExceptions(),
 	}
 }
 
@@ -34,7 +29,7 @@ func (controller *AccountController) List(c fiber.Ctx) error {
 	ctx = context.WithValue(ctx, "min_amount", minAmount)
 	accounts, err := controller.Service.GetAccounts(ctx)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -45,15 +40,12 @@ func (controller *AccountController) List(c fiber.Ctx) error {
 func (controller *AccountController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
 	}
 
 	res, err := controller.Service.GetAccount(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(AccountNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -68,13 +60,7 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateAccount(req)
 	if err != nil {
-		if utils.IsErrorCode(err, "23505") {
-			return c.Status(fiber.StatusConflict).SendString(AccountFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
-		}
-		if utils.IsErrorCode(err, "23503") {
-			return c.Status(fiber.StatusNotFound).SendString(AccountRelationNotValid.Error() + utils.GetErrorConstraintName(err))
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -82,7 +68,7 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 func (controller *AccountController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
 	}
 
 	req := new(account.UpdateAccountRequest)
@@ -92,7 +78,7 @@ func (controller *AccountController) Update(c fiber.Ctx) error {
 
 	err := controller.Service.UpdateAccount(req, id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -101,15 +87,12 @@ func (controller *AccountController) Update(c fiber.Ctx) error {
 func (controller *AccountController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
 	}
 
 	err := controller.Service.DeleteAccount(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(AccountNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

@@ -1,0 +1,34 @@
+// templates/service_template.go.tmpl
+
+package services
+
+import (
+	"context"
+)
+
+type {{.ServiceName}} struct {
+}
+
+func New{{.ServiceName}}() *{{.ServiceName}} {
+	return &{{.ServiceName}}{}
+}
+
+func (service *{{.ServiceName}}) List(ctx context.Context) (interface{}, error) {
+	return nil, nil
+}
+
+func (service *{{.ServiceName}}) Get(ctx context.Context) (interface{}, error) {
+	return nil, nil
+}
+
+func (service *{{.ServiceName}}) Create(ctx context.Context) error {
+	return nil
+}
+
+func (service *{{.ServiceName}}) Update(ctx context.Context) error {
+	return nil
+}
+
+func (service *{{.ServiceName}}) Delete(ctx context.Context) error {
+	return nil
+}

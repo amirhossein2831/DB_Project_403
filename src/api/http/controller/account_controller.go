@@ -10,14 +10,14 @@ import (
 )
 
 type AccountController struct {
-	Service          *services.AccountService
-	ExceptionHandler exception.Exception
+	service          *services.AccountService
+	exceptionHandler exception.Exception
 }
 
 func NewAccountController() *AccountController {
 	return &AccountController{
-		Service:          services.NewAccountService(),
-		ExceptionHandler: exception.NewAccountExceptions(),
+		service:          services.NewAccountService(),
+		exceptionHandler: exception.NewAccountExceptions(),
 	}
 }
 
@@ -27,9 +27,9 @@ func (controller *AccountController) List(c fiber.Ctx) error {
 
 	ctx := context.WithValue(context.Background(), "status", status)
 	ctx = context.WithValue(ctx, "min_amount", minAmount)
-	accounts, err := controller.Service.GetAccounts(ctx)
+	accounts, err := controller.service.GetAccounts(ctx)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -43,9 +43,9 @@ func (controller *AccountController) Get(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
 	}
 
-	res, err := controller.Service.GetAccount(id)
+	res, err := controller.service.GetAccount(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -58,9 +58,9 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.CreateAccount(req)
+	err := controller.service.CreateAccount(req)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
@@ -76,9 +76,9 @@ func (controller *AccountController) Update(c fiber.Ctx) error {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(validation.ValidateStruct(req))
 	}
 
-	err := controller.Service.UpdateAccount(req, id)
+	err := controller.service.UpdateAccount(req, id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusCreated).Send([]byte{})
@@ -90,9 +90,9 @@ func (controller *AccountController) Delete(c fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
 	}
 
-	err := controller.Service.DeleteAccount(id)
+	err := controller.service.DeleteAccount(id)
 	if err != nil {
-		return controller.ExceptionHandler.Handle(err, c)
+		return controller.exceptionHandler.Handle(err, c)
 	}
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

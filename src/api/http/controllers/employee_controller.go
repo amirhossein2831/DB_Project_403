@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/employee"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/employee"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"github.com/gofiber/fiber/v3"
@@ -10,13 +10,13 @@ import (
 
 type EmployeeController struct {
 	service          *services.EmployeeService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewEmployeeController() *EmployeeController {
 	return &EmployeeController{
 		service:          services.NewEmployeeService(),
-		exceptionHandler: exception.NewEmployeeExceptions(),
+		exceptionHandler: exceptions.NewEmployeeExceptions(),
 	}
 }
 
@@ -34,7 +34,7 @@ func (controller *EmployeeController) List(c fiber.Ctx) error {
 func (controller *EmployeeController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.EmployeeIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.EmployeeIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetEmployee(id)
@@ -62,7 +62,7 @@ func (controller *EmployeeController) Create(c fiber.Ctx) error {
 func (controller *EmployeeController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.EmployeeIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.EmployeeIdNotSet.Error())
 	}
 
 	req := new(employee.UpdateEmployeeRequest)
@@ -81,7 +81,7 @@ func (controller *EmployeeController) Update(c fiber.Ctx) error {
 func (controller *EmployeeController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.EmployeeIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.EmployeeIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteEmployee(id)

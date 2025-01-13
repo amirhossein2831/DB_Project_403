@@ -1,4 +1,4 @@
-package controller
+package controllers
 
 import (
 	"DB_Project/src/services"

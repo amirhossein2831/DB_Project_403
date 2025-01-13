@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"DB_Project/src/api/http/controller"
+	"DB_Project/src/api/http/controllers"
 	"github.com/gofiber/fiber/v3"
 )
 
 func LoanRoute(router fiber.Router) {
-	loanController := controller.NewLoanController()
+	loanController := controllers.NewLoanController()
 
 	router.Get("/loans", loanController.List)
 	router.Get("/loans-with-min-installments", loanController.ListWithMinInstallmentsPaid)

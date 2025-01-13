@@ -1,4 +1,4 @@
-package exception
+package exceptions
 
 import (
 	"DB_Project/src/utils"

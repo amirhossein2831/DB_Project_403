@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/account"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/account"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"context"
@@ -11,13 +11,13 @@ import (
 
 type AccountController struct {
 	service          *services.AccountService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewAccountController() *AccountController {
 	return &AccountController{
 		service:          services.NewAccountService(),
-		exceptionHandler: exception.NewAccountExceptions(),
+		exceptionHandler: exceptions.NewAccountExceptions(),
 	}
 }
 
@@ -40,7 +40,7 @@ func (controller *AccountController) List(c fiber.Ctx) error {
 func (controller *AccountController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.AccountIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetAccount(id)
@@ -68,7 +68,7 @@ func (controller *AccountController) Create(c fiber.Ctx) error {
 func (controller *AccountController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.AccountIdNotSet.Error())
 	}
 
 	req := new(account.UpdateAccountRequest)
@@ -87,7 +87,7 @@ func (controller *AccountController) Update(c fiber.Ctx) error {
 func (controller *AccountController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.AccountIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.AccountIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteAccount(id)

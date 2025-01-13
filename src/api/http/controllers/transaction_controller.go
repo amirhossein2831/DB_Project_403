@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/transaction"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/transaction"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"context"
@@ -11,13 +11,13 @@ import (
 
 type TransactionController struct {
 	service          *services.TransactionService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewTransactionController() *TransactionController {
 	return &TransactionController{
 		service:          services.NewTransactionService(),
-		exceptionHandler: exception.NewTransactionExceptions(),
+		exceptionHandler: exceptions.NewTransactionExceptions(),
 	}
 }
 
@@ -38,7 +38,7 @@ func (controller *TransactionController) List(c fiber.Ctx) error {
 func (controller *TransactionController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.TransactionIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.TransactionIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetTransaction(id)
@@ -66,7 +66,7 @@ func (controller *TransactionController) Create(c fiber.Ctx) error {
 func (controller *TransactionController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.TransactionIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.TransactionIdNotSet.Error())
 	}
 
 	req := new(transaction.UpdateTransactionRequest)
@@ -85,7 +85,7 @@ func (controller *TransactionController) Update(c fiber.Ctx) error {
 func (controller *TransactionController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.TransactionIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.TransactionIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteTransaction(id)

@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/installment"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/installment"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"github.com/gofiber/fiber/v3"
@@ -10,13 +10,13 @@ import (
 
 type InstallmentController struct {
 	service          *services.InstallmentService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewInstallmentController() *InstallmentController {
 	return &InstallmentController{
 		service:          services.NewInstallmentService(),
-		exceptionHandler: exception.NewInstallmentExceptions(),
+		exceptionHandler: exceptions.NewInstallmentExceptions(),
 	}
 }
 
@@ -34,7 +34,7 @@ func (controller *InstallmentController) List(c fiber.Ctx) error {
 func (controller *InstallmentController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.InstallmentIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetInstallment(id)
@@ -62,7 +62,7 @@ func (controller *InstallmentController) Create(c fiber.Ctx) error {
 func (controller *InstallmentController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.InstallmentIdNotSet.Error())
 	}
 
 	req := new(installment.UpdateInstallmentRequest)
@@ -81,7 +81,7 @@ func (controller *InstallmentController) Update(c fiber.Ctx) error {
 func (controller *InstallmentController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.InstallmentIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.InstallmentIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteInstallment(id)

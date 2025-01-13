@@ -5,6 +5,7 @@ import (
 	"DB_Project/cmd/make/controller"
 	"DB_Project/cmd/make/exception"
 	"DB_Project/cmd/make/repository"
+	"DB_Project/cmd/make/request"
 	"DB_Project/cmd/make/service"
 	"github.com/joho/godotenv"
 	"github.com/spf13/cobra"
@@ -28,6 +29,7 @@ func init() {
 		controller.ControllerCmd,
 		service.ServiceCmd,
 		repository.RepositoryCmd,
+		request.RequestCmd,
 		all.AllCmd,
 	)
 }

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"DB_Project/src/api/http/request/customer"
+	"DB_Project/src/api/http/requests/customer"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
 	"time"

@@ -1,4 +1,4 @@
-package exception
+package exceptions
 
 import "github.com/gofiber/fiber/v3"
 

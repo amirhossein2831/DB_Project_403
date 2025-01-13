@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/customer"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/customer"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"github.com/gofiber/fiber/v3"
@@ -10,13 +10,13 @@ import (
 
 type CustomerController struct {
 	service          *services.CustomerService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewCustomerController() *CustomerController {
 	return &CustomerController{
 		service:          services.NewCustomerService(),
-		exceptionHandler: exception.NewCustomerExceptions(),
+		exceptionHandler: exceptions.NewCustomerExceptions(),
 	}
 }
 
@@ -100,7 +100,7 @@ func (controller *CustomerController) ListWithMostAmount(c fiber.Ctx) error {
 func (controller *CustomerController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.CustomerIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.CustomerIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetCustomer(id)
@@ -129,7 +129,7 @@ func (controller *CustomerController) Create(c fiber.Ctx) error {
 func (controller *CustomerController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.CustomerIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.CustomerIdNotSet.Error())
 	}
 
 	req := new(customer.UpdateCustomerRequest)
@@ -148,7 +148,7 @@ func (controller *CustomerController) Update(c fiber.Ctx) error {
 func (controller *CustomerController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.CustomerIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.CustomerIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteCustomer(id)

@@ -1,8 +1,8 @@
-package controller
+package controllers
 
 import (
-	"DB_Project/src/api/http/exception"
-	"DB_Project/src/api/http/request/loan"
+	"DB_Project/src/api/http/exceptions"
+	"DB_Project/src/api/http/requests/loan"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
 	"context"
@@ -11,13 +11,13 @@ import (
 
 type LoanController struct {
 	service          *services.LoanService
-	exceptionHandler exception.Exception
+	exceptionHandler exceptions.Exception
 }
 
 func NewLoanController() *LoanController {
 	return &LoanController{
 		service:          services.NewLoanService(),
-		exceptionHandler: exception.NewLoanExceptions(),
+		exceptionHandler: exceptions.NewLoanExceptions(),
 	}
 }
 
@@ -49,7 +49,7 @@ func (controller *LoanController) ListWithMinInstallmentsPaid(c fiber.Ctx) error
 func (controller *LoanController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.LoanIdNotSet.Error())
 	}
 
 	res, err := controller.service.GetLoan(id)
@@ -78,7 +78,7 @@ func (controller *LoanController) Create(c fiber.Ctx) error {
 func (controller *LoanController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.LoanIdNotSet.Error())
 	}
 
 	req := new(loan.UpdateLoanRequest)
@@ -96,7 +96,7 @@ func (controller *LoanController) Update(c fiber.Ctx) error {
 func (controller *LoanController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exceptions.LoanIdNotSet.Error())
 	}
 
 	err := controller.service.DeleteLoan(id)

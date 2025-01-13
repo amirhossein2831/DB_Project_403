@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"DB_Project/src/api/http/controller"
+	"DB_Project/src/api/http/controllers"
 	"github.com/gofiber/fiber/v3"
 )
 
 func ViewsRoute(router fiber.Router) {
-	viewController := controller.NewViewController()
+	viewController := controllers.NewViewController()
 
 	router.Get("/customer_accounts", viewController.CustomerAccounts)
 	router.Get("/bank_transactions", viewController.BankTransactions)

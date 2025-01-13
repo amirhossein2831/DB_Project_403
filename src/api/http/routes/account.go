@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"DB_Project/src/api/http/controller"
+	"DB_Project/src/api/http/controllers"
 	"github.com/gofiber/fiber/v3"
 )
 
 func AccountRoute(router fiber.Router) {
-	accountController := controller.NewAccountController()
+	accountController := controllers.NewAccountController()
 
 	router.Get("/accounts", accountController.List)
 	router.Get("/accounts/:id", accountController.Get)

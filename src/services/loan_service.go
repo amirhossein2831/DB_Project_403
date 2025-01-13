@@ -1,7 +1,7 @@
 package services
 
 import (
-	"DB_Project/src/api/http/request/loan"
+	"DB_Project/src/api/http/requests/loan"
 	"DB_Project/src/models"
 	"DB_Project/src/repositories"
 	"context"

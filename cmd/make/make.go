@@ -3,6 +3,7 @@ package make
 import (
 	"DB_Project/cmd/make/controller"
 	"DB_Project/cmd/make/exception"
+	"DB_Project/cmd/make/repository"
 	"DB_Project/cmd/make/service"
 	"github.com/spf13/cobra"
 )
@@ -18,5 +19,6 @@ func init() {
 		exception.ExceptionCmd,
 		controller.ControllerCmd,
 		service.ServiceCmd,
+		repository.RepositoryCmd,
 	)
 }

@@ -1,29 +1,23 @@
 package controller
 
 import (
+	"DB_Project/src/api/http/exception"
 	"DB_Project/src/api/http/request/loan"
 	"DB_Project/src/pkg/validation"
 	"DB_Project/src/services"
-	"DB_Project/src/utils"
 	"context"
-	"errors"
-
 	"github.com/gofiber/fiber/v3"
-	"github.com/jackc/pgx/v4"
 )
 
-var LoanNotFound = errors.New("loan not found")
-var LoanFieldShouldBeUnique = errors.New("loan field should be unique: ")
-var LoanRelationNotValid = errors.New("there is no record found for given fk relation in loan: ")
-var LoanIdNotSet = errors.New("loan id should be set")
-
 type LoanController struct {
-	Service *services.LoanService
+	Service          *services.LoanService
+	ExceptionHandler exception.Exception
 }
 
 func NewLoanController() *LoanController {
 	return &LoanController{
-		Service: services.NewLoanService(),
+		Service:          services.NewLoanService(),
+		ExceptionHandler: exception.NewLoanExceptions(),
 	}
 }
 
@@ -33,7 +27,7 @@ func (controller *LoanController) List(c fiber.Ctx) error {
 	ctx := context.WithValue(context.Background(), "status", status)
 	loans, err := controller.Service.GetLoans(ctx)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -44,7 +38,7 @@ func (controller *LoanController) List(c fiber.Ctx) error {
 func (controller *LoanController) ListWithMinInstallmentsPaid(c fiber.Ctx) error {
 	loans, err := controller.Service.GetLoansWithMinInstallmentsPaid()
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
@@ -55,15 +49,12 @@ func (controller *LoanController) ListWithMinInstallmentsPaid(c fiber.Ctx) error
 func (controller *LoanController) Get(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
 	}
 
 	res, err := controller.Service.GetLoan(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(LoanNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(res)
@@ -78,21 +69,16 @@ func (controller *LoanController) Create(c fiber.Ctx) error {
 
 	err := controller.Service.CreateLoan(req)
 	if err != nil {
-		if utils.IsErrorCode(err, "23505") {
-			return c.Status(fiber.StatusConflict).SendString(LoanFieldShouldBeUnique.Error() + utils.GetErrorConstraintName(err))
-		}
-		if utils.IsErrorCode(err, "23503") {
-			return c.Status(fiber.StatusNotFound).SendString(LoanRelationNotValid.Error() + utils.GetErrorConstraintName(err))
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
+
 	return c.Status(fiber.StatusCreated).Send([]byte{})
 }
 
 func (controller *LoanController) Update(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
 	}
 
 	req := new(loan.UpdateLoanRequest)
@@ -102,24 +88,21 @@ func (controller *LoanController) Update(c fiber.Ctx) error {
 
 	err := controller.Service.UpdateLoan(req, id)
 	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
-
 	return c.Status(fiber.StatusOK).Send([]byte{})
 }
 
 func (controller *LoanController) Delete(c fiber.Ctx) error {
 	id := c.Params("id")
 	if id == "" {
-		return c.Status(fiber.StatusBadRequest).SendString(LoanIdNotSet.Error())
+		return c.Status(fiber.StatusBadRequest).SendString(exception.LoanIdNotSet.Error())
 	}
 
 	err := controller.Service.DeleteLoan(id)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return c.Status(fiber.StatusNotFound).SendString(LoanNotFound.Error())
-		}
-		return c.Status(fiber.StatusInternalServerError).SendString(err.Error())
+		return controller.ExceptionHandler.Handle(err, c)
 	}
+
 	return c.Status(fiber.StatusNoContent).Send([]byte{})
 }

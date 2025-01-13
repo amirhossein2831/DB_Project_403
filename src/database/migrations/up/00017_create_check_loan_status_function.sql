@@ -5,7 +5,7 @@ RETURNS TEXT AS $$
     BEGIN
         SELECT
             CASE
-                WHEN finished_at IS NOT NULL THEN 'repaid'
+                WHEN finished_at < CURRENT_DATE THEN 'repaid'
                 ELSE status
             END
         INTO loan_status
